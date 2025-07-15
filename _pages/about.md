@@ -1,3 +1,12 @@
+---
+permalink: /
+title: "Academic Pages is a ready-to-fork GitHub Pages template for academic personal websites"
+author_profile: true
+redirect_from: 
+  - /about/
+  - /about.html
+---
+
 ### 👨‍💻 关于我 | About Me
 
 我叫刘铭权，是**中国地质大学（武汉）**的一名软件工程专业的本科生。我对计算机世界的一切都充满好奇，尤其享受将一行行代码变成能够解决实际问题的AI模型的过程。从识别遥感图像中的微小目标，到优化大语言模型的“思考”方式，我的技术之旅充满了挑战和乐趣。
