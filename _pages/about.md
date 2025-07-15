@@ -18,9 +18,9 @@ redirect_from:
 ### 学术与项目成果 | Achievements
 
 #### 学术论文 (Publications)
-*   **M. Liu**, L. Kuang, C. Li, J. Tian, Z. Chen and X. Han, "SODRS: Semisupervised Learning for One-Stage Small Object Detection in Remote Sensing Images," in IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing, vol. 18, pp. 10711-10723, 2025, [doi: 10.1109/JSTARS.2025.3557092](https://ieeexplore.ieee.org/document/10947527).
-*   **Liu, M**. (2025). RAUM-Net: Regional Attention and Uncertainty-aware Mamba Network. arXiv preprint [arXiv:2506.21905](https://arxiv.org/abs/2506.21905).
-*   Kuang, L., **Liu, M.**, Zhang, D., Li, C., & Wu, L. (2025). An Improved Size and Direction Adaptive Filtering Method for Bathymetry Using ATLAS ATL03 Data. Remote Sensing, 17(13), 2242. [https://doi.org/10.3390/rs17132242](https://doi.org/10.3390/rs17132242)
+*   **M. Liu**, L. Kuang, C. Li, J. Tian, Z. Chen and X. Han, "SODRS: Semisupervised Learning for One-Stage Small Object Detection in Remote Sensing Images," in IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing, vol. 18, pp. 10711-10723, 2025, [doi: 10.1109/JSTARS.2025.3557092](https://ieeexplore.ieee.org/document/10947527). (SCI二区top)
+*   **Liu, M**. (2025). RAUM-Net: Regional Attention and Uncertainty-aware Mamba Network. arXiv preprint [arXiv:2506.21905](https://arxiv.org/abs/2506.21905). 
+*   Kuang, L., **Liu, M.**, Zhang, D., Li, C., & Wu, L. (2025). An Improved Size and Direction Adaptive Filtering Method for Bathymetry Using ATLAS ATL03 Data. Remote Sensing, 17(13), 2242. [https://doi.org/10.3390/rs17132242](https://doi.org/10.3390/rs17132242) (SCI二区)
 
 #### 竞赛荣誉 (Awards)
 *   **2024 昇腾AI创新大赛** - **银奖** 
