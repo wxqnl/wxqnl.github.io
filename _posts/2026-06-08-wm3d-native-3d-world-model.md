@@ -31,7 +31,9 @@ route.
 
 The native-3D variant (world points + camera pose supervision) is the core experiment
 currently in training. A frozen HunyuanVideo model, steered by a trained control adapter,
-renders the model's rough prediction into detailed video — see the interactive page for the
-three-way *rough → render → ground-truth* demos.
+renders the model's rough prediction into detailed video — and, with the control knob turned
+down, becomes a plain **text → video** generator that turns a natural-language task into a
+photoreal robot clip. See the interactive page for the three-way *rough → render →
+ground-truth* demos and the text-driven generations.
 
 <a href="/wm3d/" class="btn btn--primary btn--large">View the full interactive page →</a>
