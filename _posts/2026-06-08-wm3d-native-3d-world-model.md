@@ -29,9 +29,9 @@ route.
 - Current scale: **~1B params, trained from scratch** on **160k Open X-Embodiment windows
   (~497 hours of real robot video, 5 embodiments)**.
 
-<a href="/wm3d/" class="btn btn--primary btn--large">View the full interactive page →</a>
+The native-3D variant (world points + camera pose supervision) is the core experiment
+currently in training. A frozen HunyuanVideo model, steered by a trained control adapter,
+renders the model's rough prediction into detailed video — see the interactive page for the
+three-way *rough → render → ground-truth* demos.
 
-> Honest boundary: 3D-aware generation is a heating-up area — no "world-first" claim. The
-> uncommon, defensible part is using VGGT-style feed-forward 3D (pointmap + pose) *as the world
-> model's state and supervision target*. The native-3D variant is the core experiment currently
-> in training.
+<a href="/wm3d/" class="btn btn--primary btn--large">View the full interactive page →</a>
