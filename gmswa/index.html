@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GMSWA — Memory for State Tracking</title>
+<style>
+  :root{
+    --bg:#080b12;
+    --bg2:#101522;
+    --panel:rgba(255,255,255,.075);
+    --panel2:rgba(255,255,255,.105);
+    --ink:#f7f8fb;
+    --ink-soft:#d7ddea;
+    --muted:#97a3b8;
+    --line:rgba(255,255,255,.16);
+    --line2:rgba(255,255,255,.26);
+    --green:#6ee7a8;
+    --green2:#15b76e;
+    --blue:#8db7ff;
+    --blue2:#3478f6;
+    --amber:#ffd166;
+    --red:#ff7a70;
+    --purple:#c8a7ff;
+    --cyan:#73e7ff;
+    --shadow:0 40px 120px rgba(0,0,0,.45);
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;background:#080b12}
+  body{margin:0;background:var(--bg);color:var(--ink-soft);font-family:var(--sans);font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+  body:before{content:"";position:fixed;inset:0;z-index:-2;background:
+    radial-gradient(circle at 12% 2%, rgba(52,120,246,.34) 0, rgba(52,120,246,0) 29%),
+    radial-gradient(circle at 86% 8%, rgba(110,231,168,.26) 0, rgba(110,231,168,0) 33%),
+    radial-gradient(circle at 52% 72%, rgba(200,167,255,.15) 0, rgba(200,167,255,0) 35%),
+    linear-gradient(180deg,#080b12 0%,#0e1320 45%,#070910 100%)}
+  body:after{content:"";position:fixed;inset:0;z-index:-1;opacity:.26;background-image:linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px);background-size:44px 44px;mask-image:linear-gradient(180deg,#000 0%,transparent 78%)}
+  a{color:var(--blue);text-decoration:none}
+  a:hover{text-decoration:underline}
+  h1,h2,h3,h4{color:var(--ink);line-height:1.12;margin:0}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 28px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--cyan)}
+  .backlink{position:fixed;top:18px;left:22px;z-index:50;font-size:14px;color:var(--ink-soft);background:rgba(8,11,18,.62);backdrop-filter:blur(14px);padding:7px 13px;border:1px solid var(--line);border-radius:999px;box-shadow:0 10px 36px rgba(0,0,0,.22)}
+  .backlink:hover{color:#fff;text-decoration:none;border-color:var(--line2)}
+  .glass{background:linear-gradient(135deg,rgba(255,255,255,.105),rgba(255,255,255,.055));border:1px solid var(--line);box-shadow:var(--shadow);backdrop-filter:blur(18px)}
+
+  header{min-height:100vh;display:grid;align-items:center;padding:100px 0 60px;position:relative}
+  .hero-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:34px;align-items:center}
+  .hero-copy{position:relative;z-index:2}
+  .hero-copy .eyebrow{margin-bottom:18px}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(48px,7vw,96px);letter-spacing:-.045em;max-width:10.5ch;color:#fff}
+  h1 em{font-style:italic;color:var(--green);text-shadow:0 0 38px rgba(110,231,168,.28)}
+  .tagline{font-size:clamp(18px,2vw,23px);color:var(--ink-soft);max-width:650px;margin:26px 0 0;line-height:1.62}
+  .tagline b{color:#fff}
+  .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}
+  .btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line2);color:#fff;background:rgba(255,255,255,.08);font-weight:680;font-size:14px;transition:.18s}
+  .btn:hover{text-decoration:none;transform:translateY(-1px);border-color:rgba(255,255,255,.42);background:rgba(255,255,255,.12)}
+  .btn.primary{background:#fff;color:#080b12;border-color:#fff}
+  .btn.primary:hover{background:#f2f6ff;color:#080b12}
+  .status-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+  .chip{font-family:var(--mono);font-size:12px;color:var(--ink-soft);border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:999px;padding:7px 11px}
+  .chip.green{color:var(--green);border-color:rgba(110,231,168,.32);background:rgba(110,231,168,.08)}
+
+  .machine{position:relative;min-height:610px;border-radius:34px;overflow:hidden;padding:26px}
+  .machine:before{content:"";position:absolute;inset:-1px;background:radial-gradient(circle at 50% 0%,rgba(141,183,255,.18),transparent 45%);pointer-events:none}
+  .machine-title{display:flex;justify-content:space-between;align-items:center;gap:14px;position:relative;margin-bottom:18px}
+  .machine-title b{color:#fff;font-size:14px;letter-spacing:.02em}.machine-title span{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .stream{position:relative;height:96px;border:1px solid var(--line);border-radius:22px;background:rgba(255,255,255,.045);overflow:hidden;margin-bottom:16px}
+  .stream .tokens{position:absolute;inset:18px 16px;display:grid;grid-template-columns:repeat(12,1fr);gap:8px}
+  .tok{border-radius:10px;background:rgba(141,183,255,.18);border:1px solid rgba(141,183,255,.28)}
+  .tok:nth-child(3n){background:rgba(110,231,168,.16);border-color:rgba(110,231,168,.28)}
+  .tok:nth-child(4n){background:rgba(255,209,102,.16);border-color:rgba(255,209,102,.25)}
+  .window{position:absolute;top:13px;right:16px;width:135px;height:70px;border:2px solid var(--blue);border-radius:18px;background:rgba(52,120,246,.12);box-shadow:0 0 42px rgba(52,120,246,.25)}
+  .window:before{content:"sliding window";position:absolute;top:-23px;right:0;color:var(--blue);font-family:var(--mono);font-size:10px;white-space:nowrap}
+  .viz-split{display:grid;grid-template-columns:1fr 1fr;gap:14px;position:relative}
+  .tower{border:1px solid var(--line);border-radius:24px;background:rgba(255,255,255,.055);padding:18px;min-height:220px;position:relative;overflow:hidden}
+  .tower h3{font-size:15px;margin-bottom:12px}.tower p{color:var(--muted);font-size:13px;margin:0;line-height:1.5}
+  .bars{display:grid;gap:8px;margin-top:18px}.bar{height:14px;border-radius:999px;background:rgba(255,255,255,.09);overflow:hidden;border:1px solid rgba(255,255,255,.08)}.fill{height:100%;border-radius:999px}.fill.blue{background:linear-gradient(90deg,var(--blue2),var(--blue))}.fill.green{background:linear-gradient(90deg,var(--green2),var(--green))}.fill.red{background:linear-gradient(90deg,var(--red),#ffc1bc)}
+  .memory-orb{width:118px;height:118px;border-radius:999px;margin:22px auto 8px;background:radial-gradient(circle at 35% 30%,#fff, var(--green) 16%, var(--green2) 48%, rgba(21,183,110,.12) 70%);box-shadow:0 0 70px rgba(110,231,168,.35), inset 0 0 28px rgba(255,255,255,.28);position:relative}
+  .memory-orb:before,.memory-orb:after{content:"";position:absolute;inset:15px;border:1px solid rgba(255,255,255,.42);border-radius:999px}.memory-orb:after{inset:31px;border-color:rgba(8,11,18,.32)}
+  .gate{margin-top:16px;border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:14px;background:rgba(0,0,0,.16)}
+  .gate-row{display:grid;grid-template-columns:54px 1fr 42px;gap:10px;align-items:center;font-family:var(--mono);font-size:11px;color:var(--muted);margin:8px 0}.gate-track{height:8px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden}.gate-fill{height:100%;border-radius:99px;background:var(--green)}
+  .caption{color:var(--muted);font-size:12px;text-align:center;margin-top:14px;font-family:var(--mono)}
+
+  section{padding:94px 0;position:relative}
+  section + section{border-top:1px solid rgba(255,255,255,.08)}
+  .head{text-align:center;max-width:780px;margin:0 auto 46px}.head .eyebrow{margin-bottom:13px}h2{font-family:var(--serif);font-size:clamp(32px,4.2vw,56px);font-weight:600;letter-spacing:-.035em;color:#fff}.head p{margin:16px auto 0;color:var(--muted);font-size:17px}.head b{color:var(--ink-soft)}
+  .grid{display:grid;gap:18px}.two{grid-template-columns:1fr 1fr}.three{grid-template-columns:repeat(3,1fr)}
+  .card{background:linear-gradient(135deg,rgba(255,255,255,.095),rgba(255,255,255,.052));border:1px solid var(--line);border-radius:26px;padding:26px;box-shadow:0 18px 60px rgba(0,0,0,.18);position:relative;overflow:hidden}.card h3{font-size:21px;margin-bottom:10px}.card p{margin:0;color:var(--muted);font-size:15px}.card .tag{display:inline-flex;margin-bottom:16px;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--cyan)}
+  .big-card{min-height:340px;display:flex;flex-direction:column;justify-content:space-between}.card-number{font-size:78px;line-height:.85;font-weight:900;letter-spacing:-.07em;color:rgba(255,255,255,.08);position:absolute;right:22px;top:20px}.icon-ring{width:84px;height:84px;border-radius:28px;display:grid;place-items:center;font-size:34px;margin-bottom:24px;background:rgba(255,255,255,.07);border:1px solid var(--line)}
+  .retrieval .icon-ring{color:var(--blue);box-shadow:0 0 50px rgba(52,120,246,.12)}.state .icon-ring{color:var(--green);box-shadow:0 0 50px rgba(110,231,168,.14)}
+  .claim-strip{margin-top:24px;border:1px solid rgba(110,231,168,.28);background:linear-gradient(90deg,rgba(110,231,168,.12),rgba(141,183,255,.08));border-radius:24px;padding:22px 24px;color:var(--ink-soft);font-size:18px;text-align:center}.claim-strip b{color:#fff}
+
+  .storyline{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.story-step{min-height:220px;border-radius:24px;border:1px solid var(--line);background:rgba(255,255,255,.065);padding:20px;position:relative;overflow:hidden}.story-step:before{content:"";position:absolute;inset:auto -35px -45px auto;width:120px;height:120px;border-radius:999px;background:rgba(255,255,255,.05)}.story-step .n{width:32px;height:32px;border-radius:50%;background:#fff;color:#080b12;display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:900;margin-bottom:16px}.story-step h3{font-size:16px;margin-bottom:10px}.story-step p{color:var(--muted);font-size:14px;margin:0;line-height:1.52}.story-step.hot{border-color:rgba(110,231,168,.36);background:rgba(110,231,168,.08)}.story-step.bad{border-color:rgba(255,122,112,.26);background:rgba(255,122,112,.06)}
+
+  .showcase{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:stretch}.scoreboard{border-radius:28px;padding:26px}.score-title{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:22px}.score-title h3{font-size:24px}.score-title span{font-family:var(--mono);font-size:11px;color:var(--green);border:1px solid rgba(110,231,168,.26);border-radius:999px;padding:5px 9px;background:rgba(110,231,168,.08)}
+  .race{display:grid;gap:14px}.race-row{display:grid;grid-template-columns:130px 1fr 54px;gap:12px;align-items:center}.race-name{font-size:13px;color:var(--ink-soft)}.race-track{height:22px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.08);overflow:hidden}.race-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--red),#ffb0a9)}.race-fill.good{background:linear-gradient(90deg,var(--green2),var(--green))}.race-val{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right}.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;color:var(--muted);font-size:12px}.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}.dot.g{background:var(--green)}.dot.r{background:var(--red)}
+  .matrix{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px}.cell{aspect-ratio:1;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);display:grid;place-items:center;font-family:var(--mono);font-size:11px;color:var(--muted)}.cell.good{background:rgba(110,231,168,.18);color:var(--green);border-color:rgba(110,231,168,.28)}.cell.bad{background:rgba(255,122,112,.14);color:var(--red);border-color:rgba(255,122,112,.22)}.matrix-labels{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px;color:var(--muted);font-family:var(--mono);font-size:10px;text-align:center}
+  .mini-note{margin-top:16px;color:var(--muted);font-size:13px;line-height:1.5}
+
+  .metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.metric{border-radius:24px;padding:24px;text-align:center;background:rgba(255,255,255,.075);border:1px solid var(--line)}.metric .v{font-size:38px;font-weight:900;letter-spacing:-.06em;color:#fff;line-height:1}.metric .k{margin-top:9px;color:var(--muted);font-size:13px}.metric .v.green{color:var(--green)}.metric .v.amber{color:var(--amber)}
+  .roadmap{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.todo{padding:24px;border-radius:24px;border:1px solid var(--line);background:rgba(255,255,255,.06)}.todo h3{font-size:20px;margin-bottom:12px}.todo ul{margin:0;padding-left:18px;color:var(--muted)}.todo li{margin:8px 0}
+  .quote{max-width:980px;margin:0 auto;text-align:center;color:#fff;font-family:var(--serif);font-size:clamp(31px,4.6vw,64px);line-height:1.05;letter-spacing:-.045em}.quote span{color:var(--green);font-style:italic}.quote-sub{max-width:680px;margin:24px auto 0;text-align:center;color:var(--muted);font-size:17px}
+  .paths{display:grid;gap:10px;max-width:880px;margin:0 auto}.path{font-family:var(--mono);font-size:12px;overflow-wrap:anywhere;background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:14px;padding:13px 15px;color:var(--muted)}
+  footer{padding:44px 0 78px;color:var(--muted);font-size:13px;text-align:center;border-top:1px solid rgba(255,255,255,.08)}
+
+  @media (max-width: 980px){
+    header{min-height:auto;padding-top:90px}.hero-grid,.two,.three,.showcase,.metric-grid,.roadmap,.storyline{grid-template-columns:1fr}.machine{min-height:auto}.viz-split{grid-template-columns:1fr}.backlink{position:absolute}.race-row{grid-template-columns:106px 1fr 48px}.wrap{padding:0 20px}.metric-grid{gap:12px}
+  }
+</style>
+</head>
+<body>
+<a href="/" class="backlink">← Mingquan Liu</a>
+
+<header>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <div class="eyebrow">GMSWA · Memory for long-context AI</div>
+      <h1>Memory that <em>keeps state</em>.</h1>
+      <p class="tagline">Modern long-context models are good at finding old facts. But can they <b>update a hidden state</b> thousands of tokens later? GMSWA turns that question into a crisp mechanism story: local attention retrieves; recurrent memory tracks state; a biased gate keeps the memory alive.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#demo">Watch the failure flip</a>
+        <a class="btn" href="#story">The mechanism</a>
+        <a class="btn" href="#results">Results</a>
+        <a class="btn" href="/posts/2026/06/gmswa-state-tracking/">Blog post</a>
+      </div>
+      <div class="status-row">
+        <span class="chip green">gate-bias only: parity 1.00</span>
+        <span class="chip">S₃ long range: 0.887</span>
+        <span class="chip">340M scale-check running</span>
+      </div>
+    </div>
+
+    <div class="machine glass" aria-label="GMSWA visual diagram">
+      <div class="machine-title"><b>Sliding window + recurrent memory</b><span>visual sketch</span></div>
+      <div class="stream">
+        <div class="tokens">
+          <span class="tok"></span><span class="tok"></span><span class="tok"></span><span class="tok"></span><span class="tok"></span><span class="tok"></span><span class="tok"></span><span class="tok"></span><span class="tok"></span><span class="tok"></span><span class="tok"></span><span class="tok"></span>
+        </div>
+        <div class="window"></div>
+      </div>
+      <div class="viz-split">
+        <div class="tower">
+          <h3>Local attention</h3>
+          <p>Fast at nearby evidence and retrieval cues, but blind once the update chain falls outside the window.</p>
+          <div class="bars">
+            <div class="bar"><div class="fill blue" style="width:92%"></div></div>
+            <div class="bar"><div class="fill blue" style="width:74%"></div></div>
+            <div class="bar"><div class="fill red" style="width:50%"></div></div>
+          </div>
+          <div class="caption">retrieval strong · state chain breaks</div>
+        </div>
+        <div class="tower">
+          <h3>Recurrent memory</h3>
+          <p>A persistent state vector updates step by step. The trick is making the gate use it.</p>
+          <div class="memory-orb"></div>
+          <div class="caption">state survives beyond window</div>
+        </div>
+      </div>
+      <div class="gate">
+        <div class="gate-row"><span>naive</span><div class="gate-track"><div class="gate-fill" style="width:18%;background:var(--red)"></div></div><span>SWA</span></div>
+        <div class="gate-row"><span>biased</span><div class="gate-track"><div class="gate-fill" style="width:86%"></div></div><span>mem</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="thesis">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">The bigger point</div>
+      <h2>Long context has two jobs</h2>
+      <p>The project becomes clearer when “long context” stops being one bucket. GMSWA is about the job that retrieval benchmarks usually miss.</p>
+    </div>
+    <div class="grid two">
+      <div class="card big-card retrieval">
+        <div>
+          <div class="card-number">01</div>
+          <div class="icon-ring">⌕</div>
+          <span class="tag">Retrieval</span>
+          <h3>Find something that already happened</h3>
+          <p>Needle-in-a-haystack, recall, and static fact lookup. Sliding-window attention can remain a good local/retrieval engine.</p>
+        </div>
+        <div class="bars"><div class="bar"><div class="fill blue" style="width:88%"></div></div></div>
+      </div>
+      <div class="card big-card state">
+        <div>
+          <div class="card-number">02</div>
+          <div class="icon-ring">↻</div>
+          <span class="tag">State tracking</span>
+          <h3>Update what is true over time</h3>
+          <p>Parity, group composition, latch state, entity state, task phase. These require recurrence: a state that changes and survives.</p>
+        </div>
+        <div class="bars"><div class="bar"><div class="fill green" style="width:94%"></div></div></div>
+      </div>
+    </div>
+    <div class="claim-strip"><b>GMSWA = keep the retrieval engine, add a real state engine, and prevent the gate from taking the shortcut.</b></div>
+  </div>
+</section>
+
+<section id="story">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Mechanism story</div>
+      <h2>From failure to fix, in five moves</h2>
+      <p>This is the “show” version of the research contribution: a visible failure, a diagnosis, and a one-line fix.</p>
+    </div>
+    <div class="storyline">
+      <div class="story-step bad"><div class="n">1</div><h3>Window cliff</h3><p>SWA and depth-limited Transformers lose state when the update chain moves beyond the local window.</p></div>
+      <div class="story-step"><div class="n">2</div><h3>Memory primitive</h3><p>β∈(0,2) gives negative eigenvalues, letting recurrent memory represent flips and state transitions.</p></div>
+      <div class="story-step bad"><div class="n">3</div><h3>Hybrid trap</h3><p>Naive GMSWA still fails: the learned mix gate routes to the easy local-attention shortcut.</p></div>
+      <div class="story-step"><div class="n">4</div><h3>Clean diagnosis</h3><p>Force α=0 and the task returns to 1.0: the memory branch was not the bottleneck.</p></div>
+      <div class="story-step hot"><div class="n">5</div><h3>One-line fix</h3><p><code>mix_gate_logit_bias=-4</code> starts the model by trusting memory; the learned hybrid now tracks state.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Visual evidence</div>
+      <h2>The failure flips from random to solved</h2>
+      <p>Instead of another dense table, the core result is this contrast: without memory routing, long-range state tracking collapses; with gate bias, it comes back.</p>
+    </div>
+    <div class="showcase">
+      <div class="scoreboard glass">
+        <div class="score-title"><h3>Parity · accuracy beyond 4 windows</h3><span>higher is better</span></div>
+        <div class="race">
+          <div class="race-row"><div class="race-name">SWA</div><div class="race-track"><div class="race-fill" style="width:50%"></div></div><div class="race-val">0.50</div></div>
+          <div class="race-row"><div class="race-name">Transformer</div><div class="race-track"><div class="race-fill" style="width:50%"></div></div><div class="race-val">0.50</div></div>
+          <div class="race-row"><div class="race-name">mem β=1</div><div class="race-track"><div class="race-fill" style="width:50%"></div></div><div class="race-val">0.50</div></div>
+          <div class="race-row"><div class="race-name">mem β=2</div><div class="race-track"><div class="race-fill good" style="width:100%"></div></div><div class="race-val">1.00</div></div>
+          <div class="race-row"><div class="race-name">naive GMSWA</div><div class="race-track"><div class="race-fill" style="width:50%"></div></div><div class="race-val">0.50</div></div>
+          <div class="race-row"><div class="race-name"><b>gate bias</b></div><div class="race-track"><div class="race-fill good" style="width:100%"></div></div><div class="race-val">1.00</div></div>
+        </div>
+        <div class="legend"><span><i class="dot r"></i>chance / collapsed</span><span><i class="dot g"></i>state tracked</span></div>
+      </div>
+
+      <div class="scoreboard glass">
+        <div class="score-title"><h3>S₃ group composition · distance heatmap</h3><span>5 buckets</span></div>
+        <div class="matrix" aria-label="S3 result heatmap">
+          <div class="cell">.54</div><div class="cell bad">.20</div><div class="cell bad">.17</div><div class="cell bad">.17</div><div class="cell bad">.17</div>
+          <div class="cell good">1.0</div><div class="cell good">1.0</div><div class="cell good">1.0</div><div class="cell good">.998</div><div class="cell good">.972</div>
+          <div class="cell">.50</div><div class="cell bad">.17</div><div class="cell bad">.16</div><div class="cell bad">.17</div><div class="cell bad">.17</div>
+          <div class="cell good">1.0</div><div class="cell good">1.0</div><div class="cell good">.995</div><div class="cell good">.967</div><div class="cell good">.887</div>
+        </div>
+        <div class="matrix-labels"><span>≤W/2</span><span>W/2..W</span><span>W..2W</span><span>2W..4W</span><span>&gt;4W</span></div>
+        <p class="mini-note"><b style="color:#fff">Rows:</b> SWA, memonly β=2, naive GMSWA, gate-bias GMSWA. The visual pattern is the story: local-only and naive-hybrid collapse; memory-routed models keep state.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="results">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Current scoreboard</div>
+      <h2>Not just a toy win — a controlled diagnosis</h2>
+      <p>The evidence separates three claims: retrieval is not hurt, memory can solve state tracking, and the gate bias fixes the learned hybrid.</p>
+    </div>
+    <div class="metric-grid">
+      <div class="metric"><div class="v green">1.00</div><div class="k">parity &gt;4W with gate bias</div></div>
+      <div class="metric"><div class="v green">0.887</div><div class="k">S₃ &gt;4W with gate bias</div></div>
+      <div class="metric"><div class="v">0.160</div><div class="k">v10ms recall vs 0.155 baseline</div></div>
+      <div class="metric"><div class="v amber">340M</div><div class="k">LM scale-check running</div></div>
+    </div>
+    <div class="roadmap">
+      <div class="todo">
+        <h3>Closed</h3>
+        <ul>
+          <li>β-range and multi-scale memory implemented</li>
+          <li>leak-free state-tracking harness built</li>
+          <li>parity / S₃ causal chain closed</li>
+          <li>gate-bias-only recipe validated</li>
+        </ul>
+      </div>
+      <div class="todo">
+        <h3>Next proof points</h3>
+        <ul>
+          <li>finish 340M v11gb and run NIAH / recall eval</li>
+          <li>add multi-seed robustness on core synthetic tasks</li>
+          <li>visualize gate routing to show collapse vs repair</li>
+          <li>add a more language-like state-tracking task</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="quote">The contribution is not “another hybrid.”<br/>It is the missing <span>state engine</span> for local attention.</div>
+    <p class="quote-sub">GMSWA keeps sliding-window attention where it shines — retrieval and locality — while recurrent memory carries the state that local windows cannot preserve.</p>
+  </div>
+</section>
+
+<section id="artifacts">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Artifacts</div>
+      <h2>Internal project trail</h2>
+    </div>
+    <div class="paths">
+      <div class="path">/shared/Minko/GMSWA/paper/STATE_TRACKING_EXPERIMENTS.md</div>
+      <div class="path">/shared/Minko/GMSWA/paper/GMSWA_PROGRESS.md</div>
+      <div class="path">/data/Minko/st_gen_tasks.py · /data/Minko/st_train_eval.py</div>
+      <div class="path">/data/Minko/GMSWA/flash-linear-attention/flame/saves/GMSWA-340M-v11gb-10k/</div>
+    </div>
+  </div>
+</section>
+
+<footer>GMSWA · memory for state tracking · Mingquan Liu · 2026</footer>
+</body>
+</html>
