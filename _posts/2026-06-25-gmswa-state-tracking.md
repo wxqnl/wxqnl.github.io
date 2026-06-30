@@ -14,6 +14,8 @@ tags:
 
 > Can a model keep the language quality of local/softmax attention, recover useful long-range recall, and avoid a growing KV cache?
 
+The problem is the core of the story: full attention has strong quality but its KV cache grows linearly with context; sliding-window attention keeps cache bounded but forgets beyond the window; recurrent memory is compact and recall-friendly but can trail softmax attention on base language quality. GMSWA tests whether a window-memory hybrid can keep the best parts.
+
 The layer runs two branches: exact sliding-window attention for recent local evidence, and a gated-delta recurrent matrix memory for long-range information. A learned per-head gate mixes the two.
 
 ![GMSWA architecture](/gmswa/assets/gmswa_architecture.png)
@@ -25,6 +27,22 @@ The latest paper draft frames the contribution as a controlled characterization 
 - **The cache is constant.** At 128K context, GMSWA's KV cache is about **16.3MB**, versus about **12.9GB** for full attention — roughly **790× smaller** cache.
 - **Synthetic needle retrieval is the limitation.** On NIAH, GMSWA tracks local-window attention and trails the pure recurrent model.
 - **The negative result is informative.** Memory-directed controls — normalization, pathway dropout, memory-first curriculum, and memory-only training — all hurt or collapse recall, suggesting the issue is limited sharp addressing rather than simply “the model ignored memory.”
+
+Core benchmark snapshot:
+
+| Model | Zero-shot avg ↑ | NLL 1–2K ↓ | NLL 2–4K ↓ | NLL 4–8K ↓ |
+| --- | ---: | ---: | ---: | ---: |
+| Transformer | **0.500** | **3.62** | 5.74 | 7.21 |
+| SWA | 0.498 | 3.87 | 4.14 | 4.21 |
+| **GMSWA** | **0.499** | 3.78 | **4.02** | **4.08** |
+| GDN | 0.486 | 3.89 | 4.15 | 4.24 |
+
+| Model | SWDE ↑ | FDA ↑ | SQuAD ↑ | KV cache @128K |
+| --- | ---: | ---: | ---: | ---: |
+| SWA | 0.072 | 0.040 | 0.072 | 50MB |
+| **GMSWA** | 0.088 | **0.094** | **0.284** | **16.3MB** |
+| GDN | 0.110 | 0.026 | 0.274 | 3.4MB |
+| Transformer | **0.438** | **0.156** | 0.066 | 12.9GB |
 
 The short version: **GMSWA is a practical constant-cache long-context model and a clean map of where window–memory hybrid recall works — and where it stops.**
 
