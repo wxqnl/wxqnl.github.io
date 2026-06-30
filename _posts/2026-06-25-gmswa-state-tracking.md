@@ -1,34 +1,31 @@
 ---
-title: "GMSWA: Memory that Tracks State"
+title: "GMSWA: Constant-Cache Long-Context Memory"
 date: 2026-06-25
 permalink: /posts/2026/06/gmswa-state-tracking/
-excerpt: "GMSWA separates long context into retrieval and state tracking. Sliding-window attention handles local evidence; recurrent memory carries the hidden state; a memory-aware gate prevents the hybrid from collapsing to local shortcuts."
+excerpt: "GMSWA fuses exact sliding-window attention with a recurrent matrix memory. In a controlled 340M study, it preserves softmax-like base quality, recovers real semantic recall, and keeps a constant cache, while exposing a sharp synthetic-recall limitation."
 tags:
   - long context
   - attention
   - language modeling
-  - state tracking
+  - recurrent memory
 ---
 
-**GMSWA** is a long-context language modeling project built around a simple thesis:
+**GMSWA** (Gated-Memory Sliding-Window Attention) studies a practical long-context question:
 
-> Retrieval and state tracking are different capabilities.
+> Can a model keep the language quality of local/softmax attention, recover useful long-range recall, and avoid a growing KV cache?
 
-Sliding-window attention is useful for local evidence and retrieval, but it struggles to maintain a hidden state once the update chain leaves the window. Recurrent memory can carry that state — but a naive hybrid often learns the easy local-attention shortcut and suppresses the memory branch.
+The layer runs two branches: exact sliding-window attention for recent local evidence, and a gated-delta recurrent matrix memory for long-range information. A learned per-head gate mixes the two.
 
-The public story is capability-first, not experiment-name-first:
+![GMSWA architecture](/gmswa/assets/gmswa_architecture.png)
 
-1. Local-window and depth-limited attention collapse on long-range state tracking.
-2. Recurrent memory solves the state update primitive.
-3. Naive hybrids still fail because the learned gate collapses to local attention.
-4. A memory-aware gate initialization restores the state-tracking path.
-5. Retrieval remains roughly preserved while scaled language-model validation continues.
+The latest paper draft frames the contribution as a controlled characterization rather than an overclaim. The headline findings are:
 
-Current highlights:
+- **Base quality is preserved.** GMSWA is on par with softmax baselines on a 10-task zero-shot suite and above a pure recurrent baseline.
+- **Real semantic recall improves over local-only attention.** On real recall-intensive tasks, GMSWA is comparable to the recurrent baseline: it wins on SQuAD and FDA, while trailing on SWDE.
+- **The cache is constant.** At 128K context, GMSWA's KV cache is about **16.3MB**, versus about **12.9GB** for full attention — roughly **790× smaller** cache.
+- **Synthetic needle retrieval is the limitation.** On NIAH, GMSWA tracks local-window attention and trails the pure recurrent model.
+- **The negative result is informative.** Memory-directed controls — normalization, pathway dropout, memory-first curriculum, and memory-only training — all hurt or collapse recall, suggesting the issue is limited sharp addressing rather than simply “the model ignored memory.”
 
-- **Long-range flip tracking:** GMSWA reaches 1.00 where local-only and naive-hybrid variants fall to chance.
-- **Compositional state tracking:** GMSWA remains strong beyond four windows.
-- **Retrieval axis:** retrieval benchmark performance is roughly preserved.
-- **Scaled validation:** a 340M language-model check is validating that the final recipe stays stable beyond synthetic tasks.
+The short version: **GMSWA is a practical constant-cache long-context model and a clean map of where window–memory hybrid recall works — and where it stops.**
 
 <a href="/gmswa/" class="btn btn--primary btn--large">View the visual project showcase →</a>

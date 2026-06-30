@@ -3,31 +3,31 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>GMSWA — Memory that Tracks State</title>
+<title>GMSWA — Constant-Cache Long-Context Memory</title>
 <style>
   :root{
     --paper:#fffaf2;
-    --paper2:#f3efe6;
+    --paper2:#f2eee6;
     --ink:#121722;
-    --soft:#3f4857;
-    --muted:#707a8a;
-    --faint:#9aa3b2;
-    --line:#e4dacb;
-    --line2:#d5c8b7;
+    --soft:#3d4655;
+    --muted:#707b8b;
+    --faint:#9aa4b4;
+    --line:#e5dac9;
+    --line2:#d3c4b1;
     --white:#fff;
     --blue:#2457d6;
-    --blue2:#79a7ff;
+    --blue2:#7aa7ff;
     --blue-bg:#edf3ff;
-    --green:#14804d;
-    --green2:#62d995;
-    --green-bg:#edf8f1;
-    --amber:#c06f00;
+    --green:#12834f;
+    --green2:#63d995;
+    --green-bg:#ecf8f1;
+    --amber:#bd7200;
     --amber-bg:#fff2d4;
     --red:#b43d35;
     --red-bg:#fff0ee;
-    --violet:#6f45b8;
+    --violet:#7047b8;
     --violet-bg:#f4effb;
-    --shadow:0 28px 80px rgba(45,37,24,.11);
+    --shadow:0 28px 86px rgba(44,36,24,.12);
     --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
     --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
     --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
@@ -35,26 +35,27 @@
   *{box-sizing:border-box}
   html{scroll-behavior:smooth;background:var(--paper)}
   body{margin:0;background:
-    radial-gradient(circle at 8% 0%, rgba(255,213,122,.50), transparent 30%),
-    radial-gradient(circle at 92% 5%, rgba(121,167,255,.38), transparent 32%),
-    radial-gradient(circle at 50% 78%, rgba(98,217,149,.24), transparent 30%),
+    radial-gradient(circle at 8% 0%, rgba(255,213,122,.48), transparent 30%),
+    radial-gradient(circle at 92% 5%, rgba(122,167,255,.40), transparent 32%),
+    radial-gradient(circle at 50% 78%, rgba(99,217,149,.24), transparent 30%),
     linear-gradient(180deg,#fffdf8 0%,var(--paper) 42%,var(--paper2) 100%);
     color:var(--soft);font-family:var(--sans);font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
   a{color:var(--blue);text-decoration:none}
   a:hover{text-decoration:underline}
   h1,h2,h3,h4{color:var(--ink);line-height:1.1;margin:0}
+  img{max-width:100%;display:block}
   .wrap{max-width:1180px;margin:0 auto;padding:0 28px}
   .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);font-weight:760}
-  .backlink{position:fixed;top:18px;left:22px;z-index:50;font-size:14px;color:var(--muted);background:rgba(255,255,255,.82);backdrop-filter:blur(12px);padding:7px 13px;border:1px solid rgba(228,218,203,.95);border-radius:999px;box-shadow:0 8px 30px rgba(45,37,24,.08)}
+  .backlink{position:fixed;top:18px;left:22px;z-index:50;font-size:14px;color:var(--muted);background:rgba(255,255,255,.84);backdrop-filter:blur(12px);padding:7px 13px;border:1px solid rgba(229,218,201,.95);border-radius:999px;box-shadow:0 8px 30px rgba(45,37,24,.08)}
   .backlink:hover{color:var(--ink);text-decoration:none;border-color:var(--line2)}
-  .glass{background:rgba(255,255,255,.74);border:1px solid rgba(228,218,203,.9);box-shadow:var(--shadow);backdrop-filter:blur(18px)}
+  .glass{background:rgba(255,255,255,.74);border:1px solid rgba(229,218,201,.9);box-shadow:var(--shadow);backdrop-filter:blur(18px)}
 
-  header{padding:100px 0 54px;border-bottom:1px solid rgba(228,218,203,.8)}
-  .hero{display:grid;grid-template-columns:.95fr 1.05fr;gap:38px;align-items:center}
+  header{padding:102px 0 56px;border-bottom:1px solid rgba(229,218,201,.8)}
+  .hero{display:grid;grid-template-columns:.93fr 1.07fr;gap:38px;align-items:center}
   .hero .eyebrow{margin-bottom:18px}
-  h1{font-family:var(--serif);font-size:clamp(48px,7.1vw,96px);letter-spacing:-.052em;font-weight:620;max-width:10.8ch;color:#11151d}
+  h1{font-family:var(--serif);font-size:clamp(47px,7vw,94px);letter-spacing:-.055em;font-weight:620;max-width:11ch;color:#11151d}
   h1 em{font-style:italic;color:var(--green)}
-  .tagline{font-size:clamp(18px,2.05vw,23px);max-width:680px;margin:25px 0 0;color:#303947;line-height:1.58}
+  .tagline{font-size:clamp(18px,2.05vw,23px);max-width:705px;margin:25px 0 0;color:#303947;line-height:1.58}
   .tagline b{color:var(--ink)}
   .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}
   .btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line2);background:#fff;color:var(--ink);font-weight:720;font-size:14px;box-shadow:0 6px 18px rgba(45,37,24,.05);transition:.18s}
@@ -62,33 +63,33 @@
   .btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
   .btn.primary:hover{background:#000;color:#fff;border-color:#000}
   .chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:25px}
-  .chip{font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.65);color:var(--muted);padding:6px 11px}.chip.good{color:var(--green);background:var(--green-bg);border-color:#cfe8d8}.chip.blue{color:var(--blue);background:var(--blue-bg);border-color:#ceddf9}
+  .chip{font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.67);color:var(--muted);padding:6px 11px}.chip.good{color:var(--green);background:var(--green-bg);border-color:#cfe8d8}.chip.blue{color:var(--blue);background:var(--blue-bg);border-color:#ceddf9}.chip.warn{color:var(--amber);background:var(--amber-bg);border-color:#efd8a6}
 
-  .hero-board{border-radius:34px;padding:26px;position:relative;overflow:hidden}
-  .hero-board:before{content:"";position:absolute;inset:-90px -70px auto auto;width:280px;height:280px;border-radius:999px;background:rgba(36,87,214,.12)}
-  .board-head{display:flex;justify-content:space-between;gap:14px;align-items:center;position:relative;margin-bottom:18px}.board-head b{color:var(--ink)}.board-head span{font-family:var(--mono);font-size:11px;color:var(--faint)}
-  .visual-question{position:relative;background:linear-gradient(135deg,#fff,#fbf7ef);border:1px solid var(--line);border-radius:26px;padding:22px;overflow:hidden}.visual-question h3{font-size:20px;margin-bottom:6px}.visual-question p{margin:0;color:var(--muted);font-size:14px}
-  .timeline{margin:22px 0 18px;display:grid;grid-template-columns:repeat(12,1fr);gap:8px;position:relative}.event{height:48px;border-radius:15px;display:grid;place-items:center;font-family:var(--mono);font-weight:850;font-size:14px;background:#fff;border:1px solid var(--line);color:var(--muted)}.event.flip{color:var(--green);background:var(--green-bg);border-color:#cdebd8}.event.hold{color:var(--blue);background:var(--blue-bg);border-color:#d3def7}.event.out{opacity:.32}.window-mark{position:absolute;right:-3px;top:-8px;width:35.5%;height:64px;border:2px solid var(--blue);border-radius:20px;background:rgba(36,87,214,.07);box-shadow:0 0 0 6px rgba(36,87,214,.06)}.window-mark:before{content:"visible window";position:absolute;right:10px;top:-24px;font-family:var(--mono);font-size:10px;color:var(--blue);white-space:nowrap}
-  .answer-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.answer{border:1px solid var(--line);border-radius:20px;background:#fff;padding:16px}.answer .k{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint)}.answer .v{margin-top:8px;font-size:28px;font-weight:900;letter-spacing:-.04em;color:var(--ink)}.answer.bad .v{color:var(--red)}.answer.good{border-color:#cdebd8;background:linear-gradient(180deg,#fff,var(--green-bg))}.answer.good .v{color:var(--green)}.answer .s{margin-top:4px;color:var(--muted);font-size:13px}
-  .caption{font-family:var(--mono);font-size:11px;color:var(--faint);text-align:center;margin-top:14px}
+  .hero-card{border-radius:34px;padding:26px;position:relative;overflow:hidden}
+  .hero-card:before{content:"";position:absolute;inset:-100px -85px auto auto;width:300px;height:300px;border-radius:999px;background:rgba(36,87,214,.12)}
+  .hero-card > *{position:relative}
+  .score-hero{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+  .score-tile{background:#fff;border:1px solid var(--line);border-radius:22px;padding:18px;min-height:132px}.score-tile .k{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}.score-tile .v{font-size:34px;line-height:1;margin-top:12px;font-weight:930;letter-spacing:-.06em;color:var(--ink)}.score-tile .v.green{color:var(--green)}.score-tile .v.blue{color:var(--blue)}.score-tile .s{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.35}
+  .promise{background:linear-gradient(135deg,#fff,#fbf7ef);border:1px solid var(--line);border-radius:26px;padding:22px}.promise h3{font-size:21px;margin-bottom:8px}.promise p{margin:0;color:var(--muted);font-size:14.5px}.promise-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}.mini{border-radius:16px;border:1px solid var(--line);background:#fff;padding:13px;text-align:center}.mini b{display:block;color:var(--ink);font-size:18px}.mini span{display:block;color:var(--muted);font-size:11px;margin-top:3px}
 
-  section{padding:86px 0;position:relative}section + section{border-top:1px solid rgba(228,218,203,.75)}.head{text-align:center;max-width:780px;margin:0 auto 42px}.head .eyebrow{margin-bottom:13px}h2{font-family:var(--serif);font-size:clamp(32px,4.3vw,56px);font-weight:620;letter-spacing:-.035em}.head p{margin:15px auto 0;color:var(--muted);font-size:17px}.head b{color:var(--ink)}
-  .grid{display:grid;gap:18px}.two{grid-template-columns:1fr 1fr}.three{grid-template-columns:repeat(3,1fr)}.card{background:rgba(255,255,255,.78);border:1px solid var(--line);border-radius:26px;padding:26px;box-shadow:0 14px 44px rgba(45,37,24,.06);position:relative;overflow:hidden}.card h3{font-size:22px;margin:0 0 10px}.card p{margin:0;color:var(--muted);font-size:15.5px}.label{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:760;margin-bottom:14px}.icon{width:72px;height:72px;border-radius:24px;display:grid;place-items:center;font-size:32px;margin-bottom:22px;background:#fff;border:1px solid var(--line)}.retrieval .icon{color:var(--blue);background:var(--blue-bg);border-color:#d2def7}.state .icon{color:var(--green);background:var(--green-bg);border-color:#cdebd8}.big{min-height:310px;display:flex;flex-direction:column;justify-content:space-between}.meter{height:12px;border-radius:999px;background:#ece5db;overflow:hidden;margin-top:24px}.meter span{display:block;height:100%;border-radius:999px}.retrieval .meter span{width:86%;background:linear-gradient(90deg,var(--blue),var(--blue2))}.state .meter span{width:94%;background:linear-gradient(90deg,var(--green),var(--green2))}
+  section{padding:86px 0;position:relative}section + section{border-top:1px solid rgba(229,218,201,.75)}.head{text-align:center;max-width:810px;margin:0 auto 42px}.head .eyebrow{margin-bottom:13px}h2{font-family:var(--serif);font-size:clamp(32px,4.2vw,56px);font-weight:620;letter-spacing:-.035em}.head p{margin:15px auto 0;color:var(--muted);font-size:17px}.head b{color:var(--ink)}
+  .grid{display:grid;gap:18px}.two{grid-template-columns:1fr 1fr}.three{grid-template-columns:repeat(3,1fr)}.card{background:rgba(255,255,255,.78);border:1px solid var(--line);border-radius:26px;padding:26px;box-shadow:0 14px 44px rgba(45,37,24,.06);position:relative;overflow:hidden}.card h3{font-size:22px;margin:0 0 10px}.card p{margin:0;color:var(--muted);font-size:15.5px}.label{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:760;margin-bottom:14px}.icon{width:72px;height:72px;border-radius:24px;display:grid;place-items:center;font-size:32px;margin-bottom:22px;background:#fff;border:1px solid var(--line)}.blue-card .icon{color:var(--blue);background:var(--blue-bg);border-color:#d2def7}.green-card .icon{color:var(--green);background:var(--green-bg);border-color:#cdebd8}.amber-card .icon{color:var(--amber);background:var(--amber-bg);border-color:#eed8a7}.big{min-height:318px;display:flex;flex-direction:column;justify-content:space-between}.meter{height:12px;border-radius:999px;background:#ece5db;overflow:hidden;margin-top:24px}.meter span{display:block;height:100%;border-radius:999px}.blue-card .meter span{width:90%;background:linear-gradient(90deg,var(--blue),var(--blue2))}.green-card .meter span{width:88%;background:linear-gradient(90deg,var(--green),var(--green2))}.amber-card .meter span{width:62%;background:linear-gradient(90deg,var(--amber),#ffd166)}
   .one-line{margin-top:22px;border-radius:26px;padding:23px 26px;text-align:center;background:linear-gradient(90deg,var(--green-bg),var(--blue-bg));border:1px solid #d8e5d9;color:#2d3948;font-size:19px}.one-line b{color:var(--ink)}
 
-  .pipeline{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:14px;align-items:stretch}.pipe-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:22px;min-height:190px;box-shadow:0 12px 34px rgba(45,37,24,.055)}.pipe-card h3{font-size:20px;margin-bottom:10px}.pipe-card p{margin:0;color:var(--muted);font-size:14.5px}.pipe-card.memory{border-color:#cdebd8;background:linear-gradient(180deg,#fff,var(--green-bg))}.pipe-card.local{border-color:#d2def7;background:linear-gradient(180deg,#fff,var(--blue-bg))}.arrow{display:grid;place-items:center;color:var(--faint);font-size:28px}.gate-viz{margin-top:18px;display:grid;gap:9px}.gate-row{display:grid;grid-template-columns:72px 1fr 42px;gap:10px;align-items:center;font-family:var(--mono);font-size:11px;color:var(--muted)}.track{height:10px;border-radius:999px;background:#ebe2d8;overflow:hidden}.fill{height:100%;border-radius:999px}.fill.bad{width:18%;background:var(--red)}.fill.good{width:86%;background:linear-gradient(90deg,var(--green),var(--green2))}
+  .arch-frame{border-radius:34px;padding:22px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow)}.arch-frame img{width:100%;border-radius:22px;border:1px solid #e9e2d8;background:#fff}.arch-cap{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-top:16px;color:var(--muted);font-size:14px}.arch-cap b{color:var(--ink)}.arch-cap .pill{font-family:var(--mono);font-size:11px;border-radius:999px;padding:5px 10px;background:var(--blue-bg);color:var(--blue);border:1px solid #ceddf9;white-space:nowrap}
 
-  .showcase{display:grid;grid-template-columns:1.05fr .95fr;gap:20px}.poster{border-radius:30px;padding:28px}.poster-title{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:24px}.poster-title h3{font-size:26px}.poster-title span{font-family:var(--mono);font-size:11px;border-radius:999px;padding:6px 10px;background:var(--green-bg);color:var(--green);border:1px solid #cfe8d8;white-space:nowrap}
-  .race{display:grid;gap:14px}.race-row{display:grid;grid-template-columns:142px 1fr 54px;gap:12px;align-items:center}.race-name{font-size:13.5px;color:var(--soft)}.race-track{height:24px;border-radius:999px;background:#eee5da;overflow:hidden;border:1px solid var(--line)}.race-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--red),#ffada6)}.race-fill.good{background:linear-gradient(90deg,var(--green),var(--green2))}.race-val{font-family:var(--mono);font-size:12px;text-align:right;color:var(--muted)}
-  .heat{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:15px}.cell{aspect-ratio:1;border-radius:14px;display:grid;place-items:center;font-family:var(--mono);font-size:12px;background:#f0e8dd;border:1px solid var(--line);color:var(--muted)}.cell.good{background:var(--green-bg);border-color:#cdebd8;color:var(--green);font-weight:850}.cell.bad{background:var(--red-bg);border-color:#efc9c5;color:var(--red);font-weight:850}.heat-labels{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:9px;font-family:var(--mono);font-size:10px;color:var(--faint);text-align:center}.note{font-size:13px;color:var(--muted);margin-top:15px}.note b{color:var(--ink)}
+  .results-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.poster{border-radius:30px;padding:28px}.poster-title{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:24px}.poster-title h3{font-size:26px}.poster-title span{font-family:var(--mono);font-size:11px;border-radius:999px;padding:6px 10px;background:var(--green-bg);color:var(--green);border:1px solid #cfe8d8;white-space:nowrap}
+  .race{display:grid;gap:13px}.race-row{display:grid;grid-template-columns:132px 1fr 60px;gap:12px;align-items:center}.race-name{font-size:13.5px;color:var(--soft)}.race-track{height:24px;border-radius:999px;background:#eee5da;overflow:hidden;border:1px solid var(--line)}.race-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--blue2))}.race-fill.green{background:linear-gradient(90deg,var(--green),var(--green2))}.race-fill.red{background:linear-gradient(90deg,var(--red),#ffada6)}.race-fill.amber{background:linear-gradient(90deg,var(--amber),#ffd166)}.race-val{font-family:var(--mono);font-size:12px;text-align:right;color:var(--muted)}
+  .bars-note{font-size:13px;color:var(--muted);margin-top:15px}.bars-note b{color:var(--ink)}
+  .heat{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:15px}.cell{aspect-ratio:1;border-radius:14px;display:grid;place-items:center;font-family:var(--mono);font-size:12px;background:#f0e8dd;border:1px solid var(--line);color:var(--muted)}.cell.good{background:var(--green-bg);border-color:#cdebd8;color:var(--green);font-weight:850}.cell.bad{background:var(--red-bg);border-color:#efc9c5;color:var(--red);font-weight:850}.cell.mid{background:var(--amber-bg);border-color:#eed8a7;color:var(--amber);font-weight:850}.heat-labels{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:9px;font-family:var(--mono);font-size:10px;color:var(--faint);text-align:center}.row-labels{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;font-size:12px;color:var(--muted)}.row-labels b{color:var(--ink)}
 
-  .score{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.metric{background:#fff;border:1px solid var(--line);border-radius:24px;text-align:center;padding:24px;box-shadow:0 12px 34px rgba(45,37,24,.045)}.metric .v{font-size:42px;font-weight:930;letter-spacing:-.065em;line-height:1;color:var(--ink)}.metric .v.green{color:var(--green)}.metric .v.blue{color:var(--blue)}.metric .v.amber{color:var(--amber)}.metric .k{margin-top:9px;color:var(--muted);font-size:13px;line-height:1.35}
-  .status{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:18px}.status .card ul{margin:12px 0 0;padding-left:18px;color:var(--muted)}.status .card li{margin:7px 0}
-  .quote{max-width:980px;margin:0 auto;text-align:center;font-family:var(--serif);font-size:clamp(34px,5vw,68px);line-height:1.03;letter-spacing:-.045em;color:var(--ink)}.quote span{color:var(--green);font-style:italic}.quote-sub{max-width:720px;margin:24px auto 0;text-align:center;color:var(--muted);font-size:18px}
-  footer{padding:42px 0 76px;border-top:1px solid rgba(228,218,203,.8);text-align:center;color:var(--muted);font-size:13px}
+  .score{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.metric{background:#fff;border:1px solid var(--line);border-radius:24px;text-align:center;padding:24px;box-shadow:0 12px 34px rgba(45,37,24,.045)}.metric .v{font-size:42px;font-weight:930;letter-spacing:-.065em;line-height:1;color:var(--ink)}.metric .v.green{color:var(--green)}.metric .v.blue{color:var(--blue)}.metric .v.amber{color:var(--amber)}.metric .v.red{color:var(--red)}.metric .k{margin-top:9px;color:var(--muted);font-size:13px;line-height:1.35}
+  .ablation{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:20px}.ab{border-radius:20px;background:#fff;border:1px solid var(--line);padding:17px;min-height:152px}.ab .t{font-weight:780;color:var(--ink);font-size:14px;line-height:1.25}.ab .bad{font-size:26px;line-height:1;margin-top:18px;color:var(--red);font-weight:930;letter-spacing:-.045em}.ab .s{font-size:12px;color:var(--muted);margin-top:8px}
+  .quote{max-width:1000px;margin:0 auto;text-align:center;font-family:var(--serif);font-size:clamp(34px,5vw,68px);line-height:1.03;letter-spacing:-.045em;color:var(--ink)}.quote span{color:var(--green);font-style:italic}.quote-sub{max-width:760px;margin:24px auto 0;text-align:center;color:var(--muted);font-size:18px}
+  footer{padding:42px 0 76px;border-top:1px solid rgba(229,218,201,.8);text-align:center;color:var(--muted);font-size:13px}
 
   @media (max-width: 980px){
-    header{padding-top:82px}.hero,.two,.three,.pipeline,.showcase,.score,.status{grid-template-columns:1fr}.arrow{display:none}.answer-row{grid-template-columns:1fr}.backlink{position:absolute}.race-row{grid-template-columns:116px 1fr 46px}.wrap{padding:0 20px}.timeline{gap:5px}.event{height:42px;border-radius:12px;font-size:12px}.window-mark{width:38%}
+    header{padding-top:82px}.hero,.two,.three,.results-grid,.score,.ablation{grid-template-columns:1fr}.backlink{position:absolute}.race-row{grid-template-columns:112px 1fr 50px}.wrap{padding:0 20px}.score-hero,.promise-grid{grid-template-columns:1fr}.arch-cap{display:block}.arch-cap .pill{display:inline-block;margin-top:10px}.row-labels{grid-template-columns:1fr 1fr}
   }
 </style>
 </head>
@@ -98,183 +99,155 @@
 <header>
   <div class="wrap hero">
     <div>
-      <div class="eyebrow">GMSWA · Gated Memory Sliding-Window Attention</div>
-      <h1>Memory that <em>tracks state</em>.</h1>
-      <p class="tagline">Long context is not only about finding an old token. Some tasks ask a model to remember <b>what changed</b>. GMSWA keeps sliding-window attention for local evidence, and adds a gated recurrent memory for the state that must survive beyond the window.</p>
+      <div class="eyebrow">GMSWA · Gated-Memory Sliding-Window Attention</div>
+      <h1>Long context with a <em>constant cache</em>.</h1>
+      <p class="tagline"><b>GMSWA</b> fuses exact sliding-window attention with a recurrent matrix memory. The result is a controlled long-context study: softmax-like base quality, real semantic recall, and a fixed inference cache — plus a clear warning about where hybrid memory still fails.</p>
       <div class="actions">
-        <a class="btn primary" href="#picture">See the picture</a>
-        <a class="btn" href="#mechanism">Mechanism</a>
-        <a class="btn" href="#evidence">Evidence</a>
+        <a class="btn primary" href="#architecture">See the architecture</a>
+        <a class="btn" href="#results">Results</a>
+        <a class="btn" href="#negative">Negative result</a>
         <a class="btn" href="/posts/2026/06/gmswa-state-tracking/">Blog post</a>
       </div>
       <div class="chips">
-        <span class="chip good">long-range state: solved</span>
-        <span class="chip blue">retrieval: preserved</span>
-        <span class="chip">scaled LM validation running</span>
+        <span class="chip good">~790× smaller KV cache at 128K</span>
+        <span class="chip blue">real recall comparable to recurrent baseline</span>
+        <span class="chip warn">synthetic needle recall remains hard</span>
       </div>
     </div>
 
-    <div class="hero-board glass">
-      <div class="board-head"><b>The core question</b><span>local window vs persistent memory</span></div>
-      <div class="visual-question">
-        <h3>“What is the state now?”</h3>
-        <p>The answer depends on updates that happened before the visible window.</p>
-        <div class="timeline" aria-label="state update timeline">
-          <div class="event flip out">flip</div><div class="event hold out">hold</div><div class="event flip out">flip</div><div class="event hold out">hold</div><div class="event flip out">flip</div><div class="event hold out">hold</div><div class="event flip out">flip</div><div class="event hold out">hold</div><div class="event flip">flip</div><div class="event hold">hold</div><div class="event hold">hold</div><div class="event">?</div>
-          <div class="window-mark"></div>
-        </div>
-        <div class="answer-row">
-          <div class="answer bad"><div class="k">Local attention only</div><div class="v">guess</div><div class="s">history outside the window is gone</div></div>
-          <div class="answer good"><div class="k">GMSWA memory</div><div class="v">knows</div><div class="s">state is updated step by step</div></div>
+    <div class="hero-card glass">
+      <div class="score-hero">
+        <div class="score-tile"><div class="k">KV cache @128K</div><div class="v green">16.3MB</div><div class="s">vs 12.9GB full attention</div></div>
+        <div class="score-tile"><div class="k">Total memory @128K</div><div class="v green">~11×</div><div class="s">smaller end-to-end inference memory</div></div>
+        <div class="score-tile"><div class="k">Zero-shot quality</div><div class="v blue">0.499</div><div class="s">on par with softmax baselines</div></div>
+        <div class="score-tile"><div class="k">Real recall</div><div class="v blue">2/3</div><div class="s">wins vs recurrent baseline on SQuAD + FDA</div></div>
+      </div>
+      <div class="promise">
+        <h3>The paper-shaped claim</h3>
+        <p>GMSWA is not sold as “the best recall model.” Its value is a clean map of the tradeoff: local attention preserves language quality, memory recovers semantic recall, and exact single-needle retrieval exposes the limit.</p>
+        <div class="promise-grid">
+          <div class="mini"><b>Base</b><span>softmax-like</span></div>
+          <div class="mini"><b>Recall</b><span>real tasks</span></div>
+          <div class="mini"><b>Cache</b><span>constant</span></div>
         </div>
       </div>
-      <div class="caption">A visual sketch: not real tokens, but the failure mode is real.</div>
     </div>
   </div>
 </header>
 
-<section id="picture">
+<section id="architecture">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Architecture</div>
+      <h2>Exact local attention, backed by recurrent memory</h2>
+      <p>The new diagram shows the whole layer: a local SWA branch, an evicted-token memory branch, and a learned gate that mixes local evidence with long-range state.</p>
+    </div>
+    <figure class="arch-frame">
+      <img src="assets/gmswa_architecture.png" alt="GMSWA architecture: sliding-window attention branch, recurrent memory branch, and learned gate" />
+      <figcaption class="arch-cap"><span><b>GMSWA layer.</b> The local branch keeps exact recent context; the memory branch keeps a fixed-size recurrent state; the gate chooses how much each head trusts local evidence vs memory.</span><span class="pill">constant-cache layer</span></figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="intuition">
   <div class="wrap">
     <div class="head">
       <div class="eyebrow">The intuition</div>
-      <h2>Retrieval and state tracking are different jobs</h2>
-      <p>Most long-context benchmarks emphasize retrieval. GMSWA targets the other job: maintaining a changing hidden state.</p>
+      <h2>Three axes, one tradeoff map</h2>
+      <p>The latest draft is stronger because it does not overclaim. It separates base modeling, real recall, and synthetic recall.</p>
     </div>
-    <div class="grid two">
-      <div class="card big retrieval">
-        <div>
-          <div class="icon">⌕</div>
-          <div class="label">Retrieval</div>
-          <h3>Find something that already exists</h3>
-          <p>A fact, a name, a needle, a copied token. Sliding-window attention can still be a strong local evidence engine.</p>
-        </div>
+    <div class="grid three">
+      <div class="card big blue-card">
+        <div><div class="icon">A</div><div class="label">Base quality</div><h3>Keep the softmax behavior</h3><p>GMSWA stays with the softmax family on zero-shot quality and length-stable NLL, unlike a pure recurrent baseline.</p></div>
         <div class="meter"><span></span></div>
       </div>
-      <div class="card big state">
-        <div>
-          <div class="icon">↻</div>
-          <div class="label">State tracking</div>
-          <h3>Update what is true over time</h3>
-          <p>A bit flips, an entity changes, a plan advances, a task phase moves forward. The model needs a state that persists.</p>
-        </div>
+      <div class="card big green-card">
+        <div><div class="icon">R</div><div class="label">Real recall</div><h3>Recover semantic evidence</h3><p>On SQuAD and FDA, GMSWA beats the recurrent baseline; on SWDE it trails. Honest read: recall parity, not dominance.</p></div>
+        <div class="meter"><span></span></div>
+      </div>
+      <div class="card big amber-card">
+        <div><div class="icon">!</div><div class="label">Synthetic needle</div><h3>Sharp lookup is still hard</h3><p>On NIAH, GMSWA tracks SWA and trails the recurrent model. This becomes the main design caution.</p></div>
         <div class="meter"><span></span></div>
       </div>
     </div>
-    <div class="one-line"><b>GMSWA's thesis:</b> local attention retrieves; recurrent memory tracks state; the gate decides which engine to trust.</div>
+    <div class="one-line"><b>Takeaway:</b> window–memory hybrids can be excellent constant-cache language models, but they need sharper addressing if exact needle retrieval is the target.</div>
   </div>
 </section>
 
-<section id="mechanism">
+<section id="results">
   <div class="wrap">
     <div class="head">
-      <div class="eyebrow">The mechanism</div>
-      <h2>The memory was not broken. The gate was.</h2>
-      <p>The key discovery is simple and showable: naive hybrids learn the local shortcut and under-use memory. A memory-first gate initialization fixes the routing.</p>
+      <div class="eyebrow">Results from latest draft</div>
+      <h2>Quality, recall, and cache efficiency</h2>
+      <p>These are the headline numbers now worth showing on the project page.</p>
     </div>
 
-    <div class="pipeline">
-      <div class="pipe-card local">
-        <h3>Sliding-window attention</h3>
-        <p>Good at nearby evidence, local composition, and retrieval cues.</p>
-      </div>
-      <div class="arrow">+</div>
-      <div class="pipe-card memory">
-        <h3>Recurrent memory</h3>
-        <p>Carries a compact state across the full sequence; β∈(0,2) enables flip-like updates.</p>
-      </div>
-      <div class="arrow">→</div>
-      <div class="pipe-card">
-        <h3>Memory-aware gate</h3>
-        <p>Start by trusting memory, then learn when local evidence or state memory should dominate.</p>
-        <div class="gate-viz">
-          <div class="gate-row"><span>naive</span><div class="track"><div class="fill bad"></div></div><span>local</span></div>
-          <div class="gate-row"><span>GMSWA</span><div class="track"><div class="fill good"></div></div><span>memory</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="evidence">
-  <div class="wrap">
-    <div class="head">
-      <div class="eyebrow">Evidence</div>
-      <h2>The visual result: random becomes reliable</h2>
-      <p>On tasks where the answer depends on updates beyond the window, local-only and naive-hybrid models collapse. GMSWA keeps the state.</p>
-    </div>
-    <div class="showcase">
-      <div class="poster glass">
-        <div class="poster-title"><h3>Long-range flip tracking</h3><span>accuracy beyond 4 windows</span></div>
-        <div class="race">
-          <div class="race-row"><div class="race-name">local window</div><div class="race-track"><div class="race-fill" style="width:50%"></div></div><div class="race-val">0.50</div></div>
-          <div class="race-row"><div class="race-name">full attention</div><div class="race-track"><div class="race-fill" style="width:50%"></div></div><div class="race-val">0.50</div></div>
-          <div class="race-row"><div class="race-name">memory only</div><div class="race-track"><div class="race-fill good" style="width:100%"></div></div><div class="race-val">1.00</div></div>
-          <div class="race-row"><div class="race-name">naive hybrid</div><div class="race-track"><div class="race-fill" style="width:50%"></div></div><div class="race-val">0.50</div></div>
-          <div class="race-row"><div class="race-name"><b>GMSWA</b></div><div class="race-track"><div class="race-fill good" style="width:100%"></div></div><div class="race-val">1.00</div></div>
-        </div>
-        <p class="note"><b>Takeaway:</b> the memory can solve it; the naive gate simply fails to route to memory.</p>
-      </div>
-
-      <div class="poster glass">
-        <div class="poster-title"><h3>Compositional state tracking</h3><span>distance buckets</span></div>
-        <div class="heat" aria-label="state tracking heatmap">
-          <div class="cell">.54</div><div class="cell bad">.20</div><div class="cell bad">.17</div><div class="cell bad">.17</div><div class="cell bad">.17</div>
-          <div class="cell good">1.0</div><div class="cell good">1.0</div><div class="cell good">1.0</div><div class="cell good">.998</div><div class="cell good">.972</div>
-          <div class="cell">.50</div><div class="cell bad">.17</div><div class="cell bad">.16</div><div class="cell bad">.17</div><div class="cell bad">.17</div>
-          <div class="cell good">1.0</div><div class="cell good">1.0</div><div class="cell good">.995</div><div class="cell good">.967</div><div class="cell good">.887</div>
-        </div>
-        <div class="heat-labels"><span>near</span><span>window</span><span>2×</span><span>4×</span><span>&gt;4×</span></div>
-        <p class="note"><b>Rows:</b> local window, memory only, naive hybrid, GMSWA. Green means the state survives as distance grows.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="status">
-  <div class="wrap">
-    <div class="head">
-      <div class="eyebrow">Current scoreboard</div>
-      <h2>A paper-shaped story, not a version-number story</h2>
-      <p>The public claim is now named by capability: retrieval preserved, state tracking restored, scaled language-model validation in progress.</p>
-    </div>
     <div class="score">
-      <div class="metric"><div class="v green">1.00</div><div class="k">long-range flip tracking</div></div>
-      <div class="metric"><div class="v green">0.887</div><div class="k">harder compositional state tracking</div></div>
-      <div class="metric"><div class="v blue">≈base</div><div class="k">retrieval benchmark preserved</div></div>
-      <div class="metric"><div class="v amber">340M</div><div class="k">scaled LM validation checkpoint</div></div>
+      <div class="metric"><div class="v green">790×</div><div class="k">smaller KV cache than full attention at 128K</div></div>
+      <div class="metric"><div class="v green">16.3MB</div><div class="k">constant GMSWA cache across context length</div></div>
+      <div class="metric"><div class="v blue">0.499</div><div class="k">10-task zero-shot avg, above recurrent baseline</div></div>
+      <div class="metric"><div class="v blue">0.284</div><div class="k">SQuAD recall, slightly above recurrent baseline</div></div>
     </div>
-    <div class="status">
-      <div class="card">
-        <div class="label">Closed</div>
-        <h3>Mechanism evidence</h3>
-        <ul>
-          <li>local-only and full-attention baselines expose the state-tracking failure</li>
-          <li>memory-only model proves the recurrent state primitive is capable</li>
-          <li>naive hybrid exposes gate collapse</li>
-          <li>GMSWA fixes routing with memory-first gate initialization</li>
-        </ul>
+
+    <div style="height:20px"></div>
+    <div class="results-grid">
+      <div class="poster glass">
+        <div class="poster-title"><h3>Real recall tasks</h3><span>contains accuracy</span></div>
+        <div class="race">
+          <div class="race-row"><div class="race-name">SWA · SWDE</div><div class="race-track"><div class="race-fill" style="width:16%"></div></div><div class="race-val">.072</div></div>
+          <div class="race-row"><div class="race-name">GMSWA · SWDE</div><div class="race-track"><div class="race-fill green" style="width:20%"></div></div><div class="race-val">.088</div></div>
+          <div class="race-row"><div class="race-name">GDN · SWDE</div><div class="race-track"><div class="race-fill amber" style="width:25%"></div></div><div class="race-val">.110</div></div>
+          <div class="race-row"><div class="race-name">SWA · FDA</div><div class="race-track"><div class="race-fill" style="width:26%"></div></div><div class="race-val">.040</div></div>
+          <div class="race-row"><div class="race-name">GMSWA · FDA</div><div class="race-track"><div class="race-fill green" style="width:60%"></div></div><div class="race-val">.094</div></div>
+          <div class="race-row"><div class="race-name">GDN · FDA</div><div class="race-track"><div class="race-fill amber" style="width:17%"></div></div><div class="race-val">.026</div></div>
+          <div class="race-row"><div class="race-name">SWA · SQuAD</div><div class="race-track"><div class="race-fill" style="width:25%"></div></div><div class="race-val">.072</div></div>
+          <div class="race-row"><div class="race-name">GMSWA · SQuAD</div><div class="race-track"><div class="race-fill green" style="width:100%"></div></div><div class="race-val">.284</div></div>
+          <div class="race-row"><div class="race-name">GDN · SQuAD</div><div class="race-track"><div class="race-fill amber" style="width:96%"></div></div><div class="race-val">.274</div></div>
+        </div>
+        <p class="bars-note"><b>Reading:</b> GMSWA is comparable to the recurrent baseline on real recall and clearly above local-only SWA.</p>
       </div>
-      <div class="card">
-        <div class="label">Next</div>
-        <h3>Publication polish</h3>
-        <ul>
-          <li>finish scaled language-model validation</li>
-          <li>add multi-seed robustness bars</li>
-          <li>visualize gate routing directly</li>
-          <li>add a more natural-language-like state-tracking task</li>
-        </ul>
+
+      <div class="poster glass">
+        <div class="poster-title"><h3>NIAH synthetic needle</h3><span>the caution</span></div>
+        <div class="heat" aria-label="NIAH heatmap">
+          <div class="cell good">1.00</div><div class="cell mid">.65</div><div class="cell bad">.29</div><div class="cell bad">.18</div><div class="cell bad">.08</div>
+          <div class="cell good">.99</div><div class="cell mid">.57</div><div class="cell bad">.27</div><div class="cell bad">.16</div><div class="cell bad">.08</div>
+          <div class="cell mid">.88</div><div class="cell mid">.75</div><div class="cell mid">.57</div><div class="cell mid">.40</div><div class="cell bad">.17</div>
+          <div class="cell good">1.00</div><div class="cell mid">.86</div><div class="cell mid">.74</div><div class="cell bad">.00</div><div class="cell bad">.00</div>
+        </div>
+        <div class="heat-labels"><span>512</span><span>1K</span><span>2K</span><span>4K</span><span>8K</span></div>
+        <div class="row-labels"><span><b>SWA</b> local</span><span><b>GMSWA</b> hybrid</span><span><b>GDN</b> recurrent</span><span><b>Full</b> attention</span></div>
+        <p class="bars-note"><b>Reading:</b> GMSWA tracks SWA on synthetic single-needle retrieval; the recurrent baseline is better. This is the paper's honest negative result.</p>
       </div>
     </div>
+  </div>
+</section>
+
+<section id="negative">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">Negative result</div>
+      <h2>Forcing memory did not solve sharp retrieval</h2>
+      <p>The important analysis in the latest draft: five memory-directed controls all hurt or collapse recall. The issue is not simply “the model ignored memory.”</p>
+    </div>
+    <div class="ablation">
+      <div class="ab"><div class="t">Output normalization</div><div class="bad">~0</div><div class="s">best NLL, collapsed recall</div></div>
+      <div class="ab"><div class="t">Aggressive pathway dropout</div><div class="bad">0.00</div><div class="s">destabilized training</div></div>
+      <div class="ab"><div class="t">Gentle pathway dropout</div><div class="bad">0.11</div><div class="s">worse NIAH and NLL</div></div>
+      <div class="ab"><div class="t">Memory-first curriculum</div><div class="bad">~0</div><div class="s">competent LM, no needle recall</div></div>
+      <div class="ab"><div class="t">Memory-only training</div><div class="bad">0.011</div><div class="s">NIAH at 2K collapses</div></div>
+    </div>
+    <div class="one-line"><b>Design caution:</b> this memory branch helps smooth semantic recall, but exact synthetic retrieval needs sharper addressing or a retrieval-explicit objective.</div>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <div class="quote">GMSWA is a <span>state engine</span> for local attention.</div>
-    <p class="quote-sub">It keeps the efficiency and locality of sliding-window attention, while adding a persistent memory for the facts that change over time.</p>
+    <div class="quote">A practical constant-cache model — and a clean map of <span>where hybrid recall stops</span>.</div>
+    <p class="quote-sub">GMSWA's strongest story is not overclaiming. It shows what a window–memory hybrid gives you, and exactly which kind of recall still requires a better memory interface.</p>
   </div>
 </section>
 
-<footer>GMSWA · Gated Memory Sliding-Window Attention · Mingquan Liu · 2026</footer>
+<footer>GMSWA · Constant-cache long-context modeling · Mingquan Liu · 2026</footer>
 </body>
 </html>
