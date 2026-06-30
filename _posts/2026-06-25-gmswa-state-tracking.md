@@ -37,6 +37,17 @@ Core benchmark snapshot:
 | **GMSWA** | **0.499** | 3.78 | **4.02** | **4.08** |
 | GDN | 0.486 | 3.89 | 4.15 | 4.24 |
 
+Detailed zero-shot suite:
+
+| Model | Avg ↑ | LAMBADA | PIQA | HellaSwag | WinoGrande | ARC-e | ARC-c | BoolQ | COPA | OBQA | SciQ |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Transformer | **0.500** | 0.317 | **0.660** | 0.330 | 0.523 | 0.569 | 0.253 | **0.615** | **0.700** | 0.206 | 0.822 |
+| SWA | 0.498 | 0.315 | 0.658 | 0.326 | 0.510 | **0.577** | 0.241 | 0.608 | **0.700** | **0.240** | 0.803 |
+| **GMSWA** | **0.499** | **0.324** | 0.655 | **0.330** | **0.530** | 0.566 | **0.258** | 0.611 | 0.670 | 0.202 | **0.849** |
+| GDN | 0.486 | 0.291 | 0.656 | 0.324 | 0.509 | 0.561 | 0.241 | 0.588 | 0.650 | 0.218 | 0.819 |
+
+MMLU is not shown because it was not part of this controlled run's completed result set; the available standard suite includes HellaSwag, PIQA, ARC, BoolQ, COPA, OpenBookQA, SciQ, WinoGrande, and LAMBADA.
+
 | Model | SWDE ↑ | FDA ↑ | SQuAD ↑ | KV cache @128K |
 | --- | ---: | ---: | ---: | ---: |
 | SWA | 0.072 | 0.040 | 0.072 | 50MB |
