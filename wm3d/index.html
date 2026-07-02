@@ -67,10 +67,12 @@
     linear-gradient(90deg,oklch(100% 0 0 / .045) 1px,transparent 1px),
     linear-gradient(0deg,oklch(100% 0 0 / .035) 1px,transparent 1px);background-size:72px 72px;mask-image:linear-gradient(180deg,black,transparent 88%);pointer-events:none}
   .hero::after{content:"";position:absolute;inset:12% -18% auto auto;width:42rem;height:42rem;border:1px solid oklch(71% 0.145 205 / .25);border-radius:38% 62% 54% 46%;transform:rotate(-18deg);pointer-events:none}
-  .hero-inner{position:relative;z-index:1;padding:clamp(96px,11vw,150px) 0 clamp(58px,8vw,96px);display:grid;grid-template-columns:minmax(0,.86fr) minmax(360px,1.14fr);gap:clamp(30px,5vw,62px);align-items:center}
+  .hero .wrap{width:min(1360px,calc(100% - 44px))}
+  .hero-inner{position:relative;z-index:1;padding:clamp(96px,11vw,142px) 0 clamp(46px,7vw,82px);display:grid;grid-template-columns:1fr;gap:clamp(34px,5vw,58px);align-items:center}
+  .hero-inner > div:first-child{max-width:940px}
   .surface-label{display:inline-flex;align-items:center;gap:10px;color:oklch(86% 0.065 222);font:700 14px/1.1 var(--mono);letter-spacing:.01em;margin-bottom:22px}
   .surface-label::before{content:"";width:34px;height:2px;background:var(--cyan);border-radius:999px}
-  h1{font-family:var(--serif);font-size:clamp(42px,7vw,86px);letter-spacing:-.038em;color:white;max-width:11.2ch}
+  h1{font-family:var(--serif);font-size:clamp(46px,7vw,92px);letter-spacing:-.038em;color:white;max-width:13.2ch}
   h1 em{font-style:normal;color:var(--cyan)}
   .hero-copy{font-size:clamp(18px,2.1vw,22px);line-height:1.55;color:oklch(88% 0.025 252);max-width:66ch;margin-top:24px}
   .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
@@ -79,7 +81,7 @@
   .button.secondary{color:white;border-color:oklch(100% 0 0 / .24);background:oklch(100% 0 0 / .07)}
   .button:hover{transform:translateY(-2px);text-decoration:none}
   .hero-visual{position:relative;animation:settle .7s var(--ease-out) both}
-  .hero-frame{position:relative;border:1px solid oklch(100% 0 0 / .18);border-radius:32px;overflow:hidden;background:oklch(100% 0 0 / .06);box-shadow:0 30px 90px oklch(8% 0.04 260 / .44)}
+  .hero-frame{position:relative;border:1px solid oklch(100% 0 0 / .18);border-radius:34px;overflow:hidden;background:oklch(100% 0 0 / .06);box-shadow:0 36px 110px oklch(8% 0.04 260 / .50)}
   .hero-frame img{display:block;width:100%}
   .hero-frame::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 78%,oklch(10% 0.06 260 / .36));pointer-events:none}
   .hero-caption{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;margin-top:14px;color:oklch(83% 0.025 255);font-size:13.5px;line-height:1.48}
@@ -123,12 +125,13 @@
   .lesson b{color:var(--blue)}
 
   .architecture{background:linear-gradient(180deg,var(--bg-alt),var(--bg))}
-  .architecture-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);gap:28px;align-items:start}
-  .diagram-stage{border:1px solid var(--line);border-radius:30px;background:var(--surface);padding:14px;box-shadow:var(--shadow-soft)}
-  .diagram-stage img{display:block;border-radius:22px;width:100%;background:var(--surface-cool)}
-  .diagram-stage figcaption{padding:14px 8px 2px;color:var(--muted);font-size:13.5px;line-height:1.5;text-align:center}
-  .route-panel{display:grid;gap:14px}
-  .route-step{border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:19px 20px;display:grid;grid-template-columns:92px 1fr;gap:18px;align-items:start}
+  .architecture .wrap{width:min(1360px,calc(100% - 44px))}
+  .architecture-grid{display:grid;grid-template-columns:1fr;gap:26px;align-items:start}
+  .diagram-stage{border:1px solid var(--line);border-radius:34px;background:var(--surface);padding:16px;box-shadow:var(--shadow-soft);max-width:1280px;margin:0 auto;width:100%}
+  .diagram-stage img{display:block;border-radius:24px;width:100%;background:var(--surface-cool)}
+  .diagram-stage figcaption{padding:15px 10px 2px;color:var(--muted);font-size:13.5px;line-height:1.5;text-align:center}
+  .route-panel{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;max-width:1280px;margin:0 auto;width:100%}
+  .route-step{border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:19px 20px;display:grid;gap:12px;align-items:start}
   .route-step .role{font:760 12px/1.2 var(--mono);color:var(--blue);padding-top:3px}
   .route-step h3{font-size:18px;margin-bottom:5px}
   .route-step p{font-size:14.5px;color:var(--muted)}
@@ -174,12 +177,14 @@
   .media-section .section-head p{color:oklch(82% 0.03 255)}
   .capability{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;border:1px solid oklch(100% 0 0 / .14);border-radius:22px;background:oklch(100% 0 0 / .055);padding:18px 20px;margin-bottom:28px}
   .capability strong{color:white}.capability span{color:oklch(82% 0.03 255);font:500 13.5px/1.55 var(--mono);max-width:72ch}
-  .gallery{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-  .media-figure{border:1px solid oklch(100% 0 0 / .15);border-radius:24px;overflow:hidden;background:oklch(100% 0 0 / .06);box-shadow:0 18px 55px oklch(7% 0.04 260 / .38)}
+  .gallery{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
+  .media-figure{grid-column:span 3;border:1px solid oklch(100% 0 0 / .15);border-radius:24px;overflow:hidden;background:oklch(100% 0 0 / .06);box-shadow:0 18px 55px oklch(7% 0.04 260 / .38)}
   .media-figure img{display:block;width:100%;background:oklch(12% 0.045 260)}
   .media-figure figcaption{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin:0;padding:13px 16px;border-top:1px solid oklch(100% 0 0 / .13);color:oklch(82% 0.03 255);font-size:13px}
   .media-figure .name{color:white;font-weight:800;font-size:14px}.media-figure .meta{font-family:var(--mono);font-size:11.5px;color:oklch(75% 0.035 255)}
   .wide{grid-column:1/-1}
+  .feature-demo,.mine-demo{grid-column:span 3}
+  .gallery-note{grid-column:1/-1;color:oklch(82% 0.03 255);font-size:14px;line-height:1.55;max-width:82ch;margin:4px auto 0;text-align:center}
   .rendering-pair{display:grid;gap:18px;max-width:930px;margin:0 auto}
   .legend-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;color:oklch(82% 0.03 255);font:600 12.5px/1.3 var(--mono);text-align:center;margin-bottom:6px}
   .rendering-note{max-width:78ch;margin:18px auto 0;text-align:center;color:oklch(82% 0.03 255);font-size:14px}
@@ -198,17 +203,17 @@
   @keyframes settle{from{opacity:.96;transform:translate3d(0,10px,0) scale(.992);filter:blur(1px)}to{opacity:1;transform:none;filter:none}}
   @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
   @media(max-width:980px){
-    .hero-inner,.section-head,.architecture-grid,.status-grid{grid-template-columns:1fr}
+    .hero-inner,.section-head,.status-grid{grid-template-columns:1fr}
     .hero-inner{padding-top:92px}.hero-copy{max-width:100%}h1{max-width:13ch}
     .section-tag{margin-top:0}.section-head h2{max-width:18ch}
     .evidence-ledger,.scale-strip{grid-template-columns:repeat(2,1fr)}.evidence-item:nth-child(2){border-right:0}.evidence-item:nth-child(-n+2){border-bottom:1px solid oklch(100% 0 0 / .12)}
-    .model-landscape{grid-template-columns:1fr}.fault{grid-template-columns:1fr;gap:8px}.research-question{grid-template-columns:1fr}.route-step{grid-template-columns:1fr;gap:8px}
+    .model-landscape{grid-template-columns:1fr}.fault{grid-template-columns:1fr;gap:8px}.research-question{grid-template-columns:1fr}.route-panel{grid-template-columns:1fr 1fr}.route-step{grid-template-columns:1fr;gap:8px}
     .result-deck{grid-template-columns:1fr}.result-copy{min-height:auto}.result-proof{grid-template-columns:1fr 1fr}
   }
   @media(max-width:700px){
     body{font-size:16px}.wrap{width:min(100% - 32px,1120px)}.backlink{position:absolute;left:16px;top:14px}
-    .hero-inner{padding-top:82px}.hero-actions{gap:9px}.button{width:100%}.hero-caption{grid-template-columns:1fr}.evidence-ledger,.scale-strip,.gallery{grid-template-columns:1fr}.evidence-item{border-right:0!important}.evidence-item:not(:last-child){border-bottom:1px solid oklch(100% 0 0 / .12)}
-    .section-head h2{max-width:100%;font-size:clamp(31px,10vw,44px)}.section-head p{font-size:16px}.capability{display:grid}.legend-row{font-size:10.5px}.media-figure figcaption{display:grid}.status-panel,.result-card{padding:20px}
+    .hero .wrap{width:min(100% - 32px,1360px)}.hero-inner{padding-top:82px}.hero-actions{gap:9px}.button{width:100%}.hero-caption{grid-template-columns:1fr}.evidence-ledger,.scale-strip,.gallery,.route-panel{grid-template-columns:1fr}.evidence-item{border-right:0!important}.evidence-item:not(:last-child){border-bottom:1px solid oklch(100% 0 0 / .12)}
+    .section-head h2{max-width:100%;font-size:clamp(31px,10vw,44px)}.section-head p{font-size:16px}.capability{display:grid}.legend-row{font-size:10.5px}.media-figure,.feature-demo,.mine-demo{grid-column:1/-1}.media-figure figcaption{display:grid}.status-panel,.result-card{padding:20px}
     .result-proof{grid-template-columns:1fr}.proof-line strong{font-size:16px}table{font-size:12.5px}th,td{padding:9px 8px}td.metric,th.metric{font-size:11.8px}.results-action th:first-child,.results-action td:first-child{width:38%}.results-action th:nth-child(2),.results-action td:nth-child(2){width:20%}.results-action th:nth-child(3),.results-action td:nth-child(3){width:42%}
   }
 </style>
@@ -225,8 +230,8 @@
       <p class="hero-copy">Robots do not act on pixels. WM3D predicts depth, camera pose, point geometry, robot state, task text, and future action chunks — then treats RGB video as a rendered view of that imagined world.</p>
       <div class="hero-actions" aria-label="Page navigation">
         <a class="button primary" href="#architecture">See the route</a>
-        <a class="button secondary" href="#results">Inspect the evidence</a>
-        <a class="button secondary" href="/posts/2026/06/wm3d-native-3d-world-model/">Read the post</a>
+        <a class="button secondary" href="#demos">Watch demos</a>
+        <a class="button secondary" href="#results">Inspect evidence</a>
       </div>
     </div>
     <figure class="hero-visual">
@@ -237,7 +242,7 @@
     </figure>
   </div>
   <div class="evidence-ledger" aria-label="WM3D headline evidence">
-    <div class="evidence-item"><strong>native 3D</strong><span>Depth, point geometry, pose, robot state, text, and action live in the model state.</span></div>
+    <div class="evidence-item"><strong>native 3D</strong><span>Depth, point geometry, pose, robot state, language, and action live in the model state.</span></div>
     <div class="evidence-item"><strong>28.374 PSNR</strong><span>Open-loop future prediction on balanced OXE/DROID beats last-frame baseline.</span></div>
     <div class="evidence-item"><strong>0.865 win-rate</strong><span>Real action wins over counterfactual alternatives in token-space tests.</span></div>
     <div class="evidence-item"><strong>384 / 500</strong><span>Best downstream LIBERO spatial policy chain, reported separately from reconstruction.</span></div>
@@ -302,19 +307,19 @@
         <p class="section-tag">Technical route</p>
         <div>
           <h2>A native-3D core with an action-aware RGB branch.</h2>
-          <p>The newest structure makes the ownership boundary explicit: WM3D owns the world state and action reasoning; the video branch learns to render the rollout without taking over the policy.</p>
+          <p>The architecture separates state ownership from visual rendering: WM3D models geometry and action, while the RGB branch renders a view of the rollout.</p>
         </div>
       </div>
       <div class="architecture-grid">
         <figure class="diagram-stage">
           <img loading="lazy" decoding="async" src="assets/native_3d_wm_architecture_comparison.png" width="1800" height="773" alt="Native-3D WM3D architecture comparison showing geometry state ownership and an action-aware RGB branch" />
-          <figcaption>The comparison figure is the visual center of the story: state ownership is the difference that matters.</figcaption>
+          <figcaption>Architecture comparison: pixel/video-latent world models center the rendered sequence; WM3D centers an explicit 3D state and uses video as a read-out.</figcaption>
         </figure>
         <div class="route-panel">
           <article class="route-step"><span class="role">State</span><div><h3>Depth, point geometry, pose</h3><p>The core is trained on native-3D supervision, not only RGB reconstruction.</p></div></article>
           <article class="route-step"><span class="role">Action</span><div><h3>Dynamics are conditioned in the world state</h3><p>Future action chunks are first-class inputs for predicting how the scene changes.</p></div></article>
           <article class="route-step"><span class="role">Render</span><div><h3>Video becomes a view of the rollout</h3><p>A stronger action-aware RGB branch supplies visual fidelity while staying downstream of the world state.</p></div></article>
-          <article class="owner-boundary"><h3>Ownership boundary</h3><p>The renderer may consume world/action conditioning, but RGB losses do not define the policy. Geometry, pose, action, progress, proposer, and policy objectives stay in the WM3D core.</p></article>
+          <article class="owner-boundary"><h3>Public claim boundary</h3><p>RGB rollouts demonstrate the rendering path. The central WM3D claim remains native-3D state prediction and action-conditioned geometry, reported separately from closed-loop policy results.</p></article>
         </div>
       </div>
     </div>
@@ -420,8 +425,8 @@
       <div class="section-head">
         <p class="section-tag">Visual evidence</p>
         <div>
-          <h2>Prediction across embodiments.</h2>
-          <p>Left: imagined future. Right: real future. These clips show the same native-3D trunk applied across different robot embodiments.</p>
+          <h2>Visual rollouts across robot and game tasks.</h2>
+          <p>Robot clips show imagined futures against real futures. The Minecraft clip adds a discrete long-horizon task: craft a table, then place it in the world.</p>
         </div>
       </div>
       <div class="capability"><strong>Capability shown</strong><span>input: past video + task text + action chunk → output: future world state, depth/geometry, and coarse future video.</span></div>
@@ -430,7 +435,9 @@
         <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/demo_bridge.gif" width="512" height="512" alt="Bridge WidowX robot prediction compared with ground truth" /><figcaption><span class="name">Bridge</span><span class="meta">WidowX · tabletop</span></figcaption></figure>
         <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/demo_fractal.gif" width="512" height="512" alt="Fractal RT-1 robot prediction compared with ground truth" /><figcaption><span class="name">Fractal / RT-1</span><span class="meta">Google robot</span></figcaption></figure>
         <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/demo_jaco.gif" width="512" height="512" alt="Jaco Play robot prediction compared with ground truth" /><figcaption><span class="name">Jaco Play</span><span class="meta">Kinova Jaco</span></figcaption></figure>
-        <figure class="media-figure wide"><img loading="lazy" decoding="async" src="assets/counterfactual_droid.gif" width="800" height="540" alt="Counterfactual action test where the same starting observation produces different imagined futures under different action chunks" /><figcaption><span class="name">Counterfactual action test</span><span class="meta">same start, different action chunks</span></figcaption></figure>
+        <figure class="media-figure feature-demo"><img loading="lazy" decoding="async" src="assets/counterfactual_droid.gif" width="800" height="540" alt="Counterfactual action test where the same starting observation produces different imagined futures under different action chunks" /><figcaption><span class="name">Robot counterfactual</span><span class="meta">same start, different action chunks</span></figcaption></figure>
+        <figure class="media-figure mine-demo"><img loading="lazy" decoding="async" src="assets/minecraft_crafting_table.gif" width="360" height="360" alt="Minecraft demo where the agent crafts a crafting table and places it in the world" /><figcaption><span class="name">Minecraft crafting table</span><span class="meta">craft, then place · demo clip</span></figcaption></figure>
+        <p class="gallery-note">The Minecraft clip is included as a qualitative task-domain demo rather than a benchmark claim; the quantitative evidence remains separated in the results section above.</p>
       </div>
     </div>
   </section>
@@ -446,8 +453,8 @@
       </div>
       <div class="rendering-pair">
         <div class="legend-row" aria-hidden="true"><span>rough WM prediction</span><span>rendered video</span><span>ground truth</span></div>
-        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/bridge_hunyuan_droid.gif" width="1536" height="320" alt="Droid rollout showing rough world-model prediction, rendered video, and ground truth" /><figcaption><span class="name">Droid</span><span class="meta">rough → render → ground truth</span></figcaption></figure>
-        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/bridge_hunyuan_taco.gif" width="1536" height="320" alt="Taco Play rollout showing rough world-model prediction, rendered video, and ground truth" /><figcaption><span class="name">Taco Play</span><span class="meta">rough → render → ground truth</span></figcaption></figure>
+        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/bridge_render_droid.gif" width="1536" height="320" alt="Droid rollout showing rough world-model prediction, rendered video, and ground truth" /><figcaption><span class="name">Droid</span><span class="meta">rough → render → ground truth</span></figcaption></figure>
+        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/bridge_render_taco.gif" width="1536" height="320" alt="Taco Play rollout showing rough world-model prediction, rendered video, and ground truth" /><figcaption><span class="name">Taco Play</span><span class="meta">rough → render → ground truth</span></figcaption></figure>
       </div>
       <p class="rendering-note">Earlier rendering demos show the role of a video prior. The current improvement is structural: the RGB branch is trained as action-video modeling rather than a passive post-processor.</p>
     </div>
@@ -466,7 +473,7 @@
         <article class="status-panel"><h3>The public thesis</h3><p>WM3D reframes robot world modeling as a state-space problem: predict the future in native 3D, use actions as interventions on geometry, and render video as a view of the imagined world.</p></article>
         <div class="status-list">
           <article class="status-item"><strong><span class="marker done">✓</span> Native-3D dynamics</strong><p>Open-loop prediction and counterfactual action metrics support the central claim.</p></article>
-          <article class="status-item"><strong><span class="marker progress">◐</span> Action-aware RGB branch</strong><p>The current architecture replaces passive rendering with a video-action path while keeping WM3D as owner.</p></article>
+          <article class="status-item"><strong><span class="marker progress">◐</span> Action-aware RGB branch</strong><p>The RGB branch is presented as a rendering layer for imagined state, not as a replacement for the native-3D model.</p></article>
           <article class="status-item"><strong><span class="marker progress">◐</span> Closed-loop planning</strong><p>The next goal is to make world-model imagination improve policy selection reliably, not just offline metrics.</p></article>
         </div>
       </div>
