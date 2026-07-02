@@ -53,8 +53,8 @@
   img{max-width:100%;height:auto}
   .wrap{width:min(1120px,calc(100% - 44px));margin:0 auto}
   .measure{max-width:74ch}
-  .skip{position:absolute;left:-999px;top:10px;background:var(--surface);color:var(--ink);padding:10px 14px;border:1px solid var(--line);border-radius:999px;z-index:calc(var(--z-sticky) + 1)}
-  .skip:focus{left:16px}
+  .skip{position:absolute;left:16px;top:10px;transform:translateY(-180%);background:var(--surface);color:var(--ink);padding:10px 14px;border:1px solid var(--line);border-radius:999px;z-index:calc(var(--z-sticky) + 1);transition:transform .18s var(--ease-out)}
+  .skip:focus{transform:none}
   .backlink{position:fixed;top:18px;left:22px;z-index:var(--z-sticky);font-size:14px;color:oklch(87% 0.025 250);background:oklch(16% 0.055 260 / .78);border:1px solid oklch(100% 0 0 / .18);border-radius:999px;padding:8px 13px;backdrop-filter:blur(10px);box-shadow:0 8px 28px oklch(10% 0.04 260 / .26)}
   .backlink:hover{color:white;text-decoration:none}
 
@@ -93,10 +93,11 @@
   main{background:var(--bg)}
   section{padding:clamp(72px,9vw,118px) 0;border-top:1px solid var(--line)}
   section:first-child{border-top:0}
-  .section-head{display:grid;grid-template-columns:.36fr minmax(0,.64fr);gap:clamp(24px,5vw,58px);align-items:start;margin-bottom:clamp(30px,5vw,56px)}
-  .section-tag{font-weight:780;color:var(--blue);font-size:15px;line-height:1.3;margin-top:.35rem}
-  .section-head h2{font-family:var(--serif);font-size:clamp(32px,4.8vw,56px);letter-spacing:-.035em;max-width:13ch}
-  .section-head p{font-size:17.5px;color:var(--muted-strong);max-width:69ch}
+  .section-head{display:grid;grid-template-columns:minmax(170px,.32fr) minmax(0,.68fr);gap:clamp(24px,5vw,60px);align-items:start;margin-bottom:clamp(34px,5vw,60px)}
+  .section-tag{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-weight:760;color:var(--blue);font-size:13px;line-height:1.35;letter-spacing:0;margin-top:.48rem}
+  .section-tag::before{content:"";width:9px;height:9px;border-radius:999px;background:var(--cyan);box-shadow:inset 0 0 0 2px oklch(100% 0 0 / .9)}
+  .section-head h2{font-family:var(--serif);font-size:clamp(32px,4.8vw,56px);letter-spacing:-.035em;max-width:14.6ch;margin-bottom:16px}
+  .section-head p{font-size:clamp(16.5px,1.55vw,19px);line-height:1.58;color:var(--muted-strong);max-width:66ch}
 
   .fault-lines{display:grid;grid-template-columns:1fr;gap:12px;max-width:960px;margin-left:auto}
   .fault{display:grid;grid-template-columns:210px 1fr;gap:24px;align-items:start;padding:22px 0;border-top:1px solid var(--line)}
@@ -140,19 +141,31 @@
   .scale-item strong{font-family:var(--serif);font-size:clamp(31px,4vw,46px);line-height:1;color:var(--ink);letter-spacing:-.04em}
   .scale-item span{font-size:13.5px;line-height:1.45;color:var(--muted);margin-top:16px}
 
-  .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
-  .result-card{border:1px solid var(--line);border-radius:var(--radius-xl);background:var(--surface);padding:22px;box-shadow:var(--shadow-tight)}
-  .result-card h3{font-size:23px;margin-bottom:16px;letter-spacing:-.022em}
-  .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:18px;background:var(--surface)}
-  table{width:100%;border-collapse:collapse;min-width:620px;font-size:14px}
-  th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
-  th{font-size:12px;color:var(--muted-strong);font-weight:780;background:var(--surface-cool)}
+  .result-grid{display:grid;grid-template-columns:1fr;gap:24px;align-items:start}
+  .result-card{border:1px solid var(--line);border-radius:var(--radius-xl);background:var(--surface);padding:clamp(18px,2.4vw,28px);box-shadow:var(--shadow-tight)}
+  .result-card h3{font-size:clamp(22px,2.4vw,30px);margin-bottom:6px;letter-spacing:-.026em;max-width:28ch}
+  .result-deck{display:grid;grid-template-columns:minmax(220px,.34fr) minmax(0,.66fr);gap:clamp(18px,3vw,30px);align-items:start}
+  .result-copy{display:flex;flex-direction:column;min-height:100%;justify-content:space-between;gap:18px}
+  .result-kicker{font-family:var(--mono);font-size:12px;line-height:1.3;color:var(--blue);font-weight:760;margin-bottom:13px}
+  .result-summary{font-size:15.5px;line-height:1.6;color:var(--muted);max-width:46ch}
+  .result-proof{display:grid;gap:10px;margin-top:2px}
+  .proof-line{display:flex;align-items:baseline;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding-top:11px;color:var(--muted);font-size:13.5px}
+  .proof-line strong{font-family:var(--mono);font-size:18px;line-height:1;color:var(--teal);font-weight:850;white-space:nowrap}
+  .table-wrap{overflow:visible;border:1px solid var(--line);border-radius:18px;background:var(--surface)}
+  table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13.5px}
+  th,td{padding:10px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle;overflow-wrap:anywhere}
+  th{font-size:11.5px;color:var(--muted-strong);font-weight:780;background:var(--surface-cool)}
   tr:last-child td{border-bottom:0}
-  td.metric,th.metric{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:13px;color:var(--ink)}
+  td.metric,th.metric{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.8px;color:var(--ink);white-space:nowrap;overflow-wrap:normal}
+  .results-prediction th:first-child,.results-prediction td:first-child{width:34%}
+  .results-prediction th:not(:first-child),.results-prediction td:not(:first-child){width:22%}
+  .results-action th:first-child,.results-action td:first-child{width:36%}
+  .results-action th:nth-child(2),.results-action td:nth-child(2){width:18%}
+  .results-action th:nth-child(3),.results-action td:nth-child(3){width:46%}
   .win{color:var(--teal);font-weight:850}
   .wm-row{background:oklch(94% 0.03 245)}
   .note{font-size:13.6px;color:var(--muted);line-height:1.55;margin-top:14px}
-  .benchmark-note{margin-top:22px;border:1px solid oklch(62% 0.15 72 / .35);border-radius:var(--radius-lg);background:var(--amber-wash);padding:20px 22px;color:oklch(34% 0.07 72)}
+  .benchmark-note{margin-top:24px;border:1px solid oklch(62% 0.15 72 / .35);border-radius:var(--radius-lg);background:var(--amber-wash);padding:20px 22px;color:oklch(34% 0.07 72)}
   .benchmark-note b{color:oklch(42% 0.12 72)}
 
   .media-section{background:var(--deep);color:oklch(89% 0.025 255)}
@@ -185,15 +198,18 @@
   @keyframes settle{from{opacity:.96;transform:translate3d(0,10px,0) scale(.992);filter:blur(1px)}to{opacity:1;transform:none;filter:none}}
   @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
   @media(max-width:980px){
-    .hero-inner,.section-head,.architecture-grid,.result-grid,.status-grid{grid-template-columns:1fr}
+    .hero-inner,.section-head,.architecture-grid,.status-grid{grid-template-columns:1fr}
     .hero-inner{padding-top:92px}.hero-copy{max-width:100%}h1{max-width:13ch}
+    .section-tag{margin-top:0}.section-head h2{max-width:18ch}
     .evidence-ledger,.scale-strip{grid-template-columns:repeat(2,1fr)}.evidence-item:nth-child(2){border-right:0}.evidence-item:nth-child(-n+2){border-bottom:1px solid oklch(100% 0 0 / .12)}
     .model-landscape{grid-template-columns:1fr}.fault{grid-template-columns:1fr;gap:8px}.research-question{grid-template-columns:1fr}.route-step{grid-template-columns:1fr;gap:8px}
+    .result-deck{grid-template-columns:1fr}.result-copy{min-height:auto}.result-proof{grid-template-columns:1fr 1fr}
   }
   @media(max-width:700px){
     body{font-size:16px}.wrap{width:min(100% - 32px,1120px)}.backlink{position:absolute;left:16px;top:14px}
     .hero-inner{padding-top:82px}.hero-actions{gap:9px}.button{width:100%}.hero-caption{grid-template-columns:1fr}.evidence-ledger,.scale-strip,.gallery{grid-template-columns:1fr}.evidence-item{border-right:0!important}.evidence-item:not(:last-child){border-bottom:1px solid oklch(100% 0 0 / .12)}
     .section-head h2{max-width:100%;font-size:clamp(31px,10vw,44px)}.section-head p{font-size:16px}.capability{display:grid}.legend-row{font-size:10.5px}.media-figure figcaption{display:grid}.status-panel,.result-card{padding:20px}
+    .result-proof{grid-template-columns:1fr}.proof-line strong{font-size:16px}table{font-size:12.5px}th,td{padding:9px 8px}td.metric,th.metric{font-size:11.8px}.results-action th:first-child,.results-action td:first-child{width:38%}.results-action th:nth-child(2),.results-action td:nth-child(2){width:20%}.results-action th:nth-child(3),.results-action td:nth-child(3){width:42%}
   }
 </style>
 </head>
@@ -333,38 +349,66 @@
       </div>
       <div class="result-grid">
         <article class="result-card">
-          <h3>Open-loop future prediction vs. last-frame baseline</h3>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Metric</th><th class="metric">WM3D</th><th class="metric">Last-frame</th><th class="metric">Delta</th></tr></thead>
-              <tbody>
-                <tr class="wm-row"><td>PSNR ↑</td><td class="metric win">28.374</td><td class="metric">23.285</td><td class="metric win">+21.9%</td></tr>
-                <tr class="wm-row"><td>SSIM ↑</td><td class="metric win">0.9135</td><td class="metric">0.8744</td><td class="metric win">+4.5%</td></tr>
-                <tr class="wm-row"><td>LPIPS ↓</td><td class="metric win">0.0985</td><td class="metric">0.1199</td><td class="metric win">−17.9%</td></tr>
-                <tr class="wm-row"><td>RGB L1 ↓</td><td class="metric win">0.0199</td><td class="metric">0.0321</td><td class="metric win">−38.1%</td></tr>
-                <tr class="wm-row"><td>Motion RGB L1 ↓</td><td class="metric win">0.0648</td><td class="metric">0.1409</td><td class="metric win">−54.0%</td></tr>
-                <tr class="wm-row"><td>R3D18-FVD ↓</td><td class="metric win">22.037</td><td class="metric">28.157</td><td class="metric win">better</td></tr>
-              </tbody>
-            </table>
+          <div class="result-deck">
+            <div class="result-copy">
+              <div>
+                <p class="result-kicker">Open-loop future prediction</p>
+                <h3>Against a last-frame baseline, WM3D wins on every reported RGB metric.</h3>
+                <p class="result-summary">This table is about future prediction quality only: context 16 frames, future 8 frames, balanced OXE/DROID evaluation.</p>
+              </div>
+              <div class="result-proof" aria-label="Open-loop result highlights">
+                <div class="proof-line"><span>PSNR lift</span><strong>+21.9%</strong></div>
+                <div class="proof-line"><span>Motion RGB L1</span><strong>−54.0%</strong></div>
+              </div>
+            </div>
+            <div>
+              <div class="table-wrap">
+                <table class="results-prediction">
+                  <thead><tr><th>Metric</th><th class="metric">WM3D</th><th class="metric">Last-frame</th><th class="metric">Delta</th></tr></thead>
+                  <tbody>
+                    <tr class="wm-row"><td>PSNR ↑</td><td class="metric win">28.374</td><td class="metric">23.285</td><td class="metric win">+21.9%</td></tr>
+                    <tr class="wm-row"><td>SSIM ↑</td><td class="metric win">0.9135</td><td class="metric">0.8744</td><td class="metric win">+4.5%</td></tr>
+                    <tr class="wm-row"><td>LPIPS ↓</td><td class="metric win">0.0985</td><td class="metric">0.1199</td><td class="metric win">−17.9%</td></tr>
+                    <tr class="wm-row"><td>RGB L1 ↓</td><td class="metric win">0.0199</td><td class="metric">0.0321</td><td class="metric win">−38.1%</td></tr>
+                    <tr class="wm-row"><td>Motion RGB L1 ↓</td><td class="metric win">0.0648</td><td class="metric">0.1409</td><td class="metric win">−54.0%</td></tr>
+                    <tr class="wm-row"><td>R3D18-FVD ↓</td><td class="metric win">22.037</td><td class="metric">28.157</td><td class="metric win">better</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="note">I3D-FVD is not emphasized because it favors low-motion baselines in this setting.</p>
+            </div>
           </div>
-          <p class="note">Protocol: balanced OXE/DROID future prediction, context 16 frames, future 8 frames. I3D-FVD is not emphasized because it favors low-motion baselines in this setting.</p>
         </article>
         <article class="result-card">
-          <h3>Native-3D and action controllability</h3>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Metric</th><th class="metric">Value</th><th>Reading</th></tr></thead>
-              <tbody>
-                <tr><td>Depth future L1 ↓</td><td class="metric win">0.02659</td><td>future depth is directly supervised</td></tr>
-                <tr><td>Depth-change cosine ↑</td><td class="metric win">0.6735</td><td>captures how geometry changes</td></tr>
-                <tr><td>Depth-change sign accuracy ↑</td><td class="metric win">0.8193</td><td>direction of change is reliable</td></tr>
-                <tr class="wm-row"><td>Real-action token win-rate ↑</td><td class="metric win">0.8650</td><td>real actions beat counterfactual alternatives</td></tr>
-                <tr class="wm-row"><td>Real-action depth win-rate ↑</td><td class="metric win">0.7825</td><td>action affects geometry, not just texture</td></tr>
-                <tr class="wm-row"><td>Motion-region depth win-rate ↑</td><td class="metric win">0.7708</td><td>effect remains in moving regions</td></tr>
-              </tbody>
-            </table>
+          <div class="result-deck">
+            <div class="result-copy">
+              <div>
+                <p class="result-kicker">Native-3D action sensitivity</p>
+                <h3>Real actions beat counterfactual alternatives in the geometry state.</h3>
+                <p class="result-summary">This is the core native-3D evidence: action changes are measured in tokens, depth, depth-change, and moving regions — not just rendered texture.</p>
+              </div>
+              <div class="result-proof" aria-label="Native-3D action result highlights">
+                <div class="proof-line"><span>Token win-rate</span><strong>0.865</strong></div>
+                <div class="proof-line"><span>Depth-change sign</span><strong>0.819</strong></div>
+              </div>
+            </div>
+            <div>
+              <div class="table-wrap">
+                <table class="results-action">
+                  <thead><tr><th>Metric</th><th class="metric">Value</th><th>Reading</th></tr></thead>
+                  <tbody>
+                    <tr><td>Depth future L1 ↓</td><td class="metric win">0.02659</td><td>future depth is directly supervised</td></tr>
+                    <tr><td>Depth-change cosine ↑</td><td class="metric win">0.6735</td><td>captures how geometry changes</td></tr>
+                    <tr><td>Depth-change sign acc ↑</td><td class="metric win">0.8193</td><td>direction of change is reliable</td></tr>
+                    <tr class="wm-row"><td>Real-action token win ↑</td><td class="metric win">0.8650</td><td>real actions beat counterfactual alternatives</td></tr>
+                    <tr class="wm-row"><td>Real-action depth win ↑</td><td class="metric win">0.7825</td><td>action affects geometry, not just texture</td></tr>
+                    <tr class="wm-row"><td>Motion-region depth win ↑</td><td class="metric win">0.7708</td><td>effect remains in moving regions</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="note">These numbers support native-3D dynamics and action-conditioned controllability. They are not a substitute for closed-loop robot success.</p>
+            </div>
           </div>
-          <p class="note">These numbers support native-3D dynamics and action-conditioned controllability. They are not used as a substitute for closed-loop robot success.</p>
         </article>
       </div>
       <p class="benchmark-note"><b>Downstream benchmark:</b> the current best LIBERO spatial policy chain reaches <b>384/500 = 76.8%</b> over 500 episodes. The important lesson is also negative: lower offline loss did not reliably predict higher rollout success, so WM3D tracks policy evaluation separately from reconstruction metrics.</p>
