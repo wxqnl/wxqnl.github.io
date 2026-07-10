@@ -251,7 +251,7 @@
     <div class="evidence-item"><strong>native 3D</strong><span>Depth, point geometry, pose, robot state, language, and action live in the model state.</span></div>
     <div class="evidence-item"><strong>28.374 PSNR</strong><span>Open-loop future prediction on balanced OXE/DROID beats last-frame baseline.</span></div>
     <div class="evidence-item"><strong>0.865 win-rate</strong><span>Real action wins over counterfactual alternatives in token-space tests.</span></div>
-    <div class="evidence-item"><strong>384 / 500</strong><span>Best downstream LIBERO spatial policy chain, reported separately from reconstruction.</span></div>
+    <div class="evidence-item"><strong>0.819</strong><span>Predicted depth-change direction is correct under real actions 81.9% of the time.</span></div>
   </div>
 </header>
 
@@ -422,7 +422,6 @@
           </div>
         </article>
       </div>
-      <p class="benchmark-note"><b>Downstream benchmark:</b> the current best LIBERO spatial policy chain reaches <b>384/500 = 76.8%</b> over 500 episodes. The important lesson is also negative: lower offline loss did not reliably predict higher rollout success, so WM3D tracks policy evaluation separately from reconstruction metrics.</p>
     </div>
   </section>
 
@@ -451,7 +450,7 @@
       <div class="section-head">
         <p class="section-tag">Open-world game domain</p>
         <div>
-          <h2>The same model imagines Minecraft tasks.</h2>
+          <h2>Minecraft tasks.</h2>
           <p>Beyond robot arms, WM3D runs on an open-world game domain, where progress means discrete, long-horizon goals: gather a resource, craft an item, then place it. Each clip is a full task carried out inside the model's imagined world.</p>
         </div>
       </div>
@@ -459,7 +458,7 @@
       <div class="mine-gallery">
         <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/minecraft_planks.gif" width="320" height="320" alt="Minecraft rollout where the agent turns logs into wooden planks" /><figcaption><span class="name">Craft planks</span><span class="meta">logs → wooden planks</span></figcaption></figure>
         <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/minecraft_cobblestone.gif" width="320" height="320" alt="Minecraft rollout where the agent mines stone and obtains cobblestone" /><figcaption><span class="name">Mine cobblestone</span><span class="meta">dig stone → cobblestone</span></figcaption></figure>
-        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/minecraft_crafting_table.gif" width="360" height="360" alt="Minecraft rollout where the agent crafts a crafting table and places it in the world" /><figcaption><span class="name">Craft &amp; place table</span><span class="meta">craft, then place</span></figcaption></figure>
+        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/minecraft_crafting_table.gif" width="320" height="320" alt="Minecraft rollout where the agent crafts a crafting table and places it in the world" /><figcaption><span class="name">Craft &amp; place table</span><span class="meta">craft, then place</span></figcaption></figure>
       </div>
       <p class="mine-note">These are qualitative task-domain demos on the <a href="https://github.com/danijar/diamond_env" target="_blank" rel="noopener">Diamond Minecraft environment</a>, shown to illustrate long-horizon controllability rather than as a benchmark claim; the quantitative evidence stays separated in the results section above.</p>
     </div>
