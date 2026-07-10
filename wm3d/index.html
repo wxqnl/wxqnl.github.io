@@ -183,8 +183,12 @@
   .media-figure figcaption{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin:0;padding:13px 16px;border-top:1px solid oklch(100% 0 0 / .13);color:oklch(82% 0.03 255);font-size:13px}
   .media-figure .name{color:white;font-weight:800;font-size:14px}.media-figure .meta{font-family:var(--mono);font-size:11.5px;color:oklch(75% 0.035 255)}
   .wide{grid-column:1/-1}
-  .feature-demo,.mine-demo{grid-column:span 3}
+  .feature-demo{grid-column:1/-1;max-width:840px;width:100%;margin:0 auto}
   .gallery-note{grid-column:1/-1;color:oklch(82% 0.03 255);font-size:14px;line-height:1.55;max-width:82ch;margin:4px auto 0;text-align:center}
+  .mine-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .mine-gallery .media-figure{grid-column:auto}
+  .mine-note{max-width:82ch;margin:22px auto 0;text-align:center;color:oklch(82% 0.03 255);font-size:14px;line-height:1.55}
+  .mine-note a{color:var(--cyan)}
   .rendering-pair{display:grid;gap:18px;max-width:930px;margin:0 auto}
   .legend-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;color:oklch(82% 0.03 255);font:600 12.5px/1.3 var(--mono);text-align:center;margin-bottom:6px}
   .rendering-note{max-width:78ch;margin:18px auto 0;text-align:center;color:oklch(82% 0.03 255);font-size:14px}
@@ -209,12 +213,14 @@
     .evidence-ledger,.scale-strip{grid-template-columns:repeat(2,1fr)}.evidence-item:nth-child(2){border-right:0}.evidence-item:nth-child(-n+2){border-bottom:1px solid oklch(100% 0 0 / .12)}
     .model-landscape{grid-template-columns:1fr}.fault{grid-template-columns:1fr;gap:8px}.research-question{grid-template-columns:1fr}.route-panel{grid-template-columns:1fr 1fr}.route-step{grid-template-columns:1fr;gap:8px}
     .result-deck{grid-template-columns:1fr}.result-copy{min-height:auto}.result-proof{grid-template-columns:1fr 1fr}
+    .mine-gallery{grid-template-columns:repeat(3,1fr)}
   }
   @media(max-width:700px){
     body{font-size:16px}.wrap{width:min(100% - 32px,1120px)}.backlink{position:absolute;left:16px;top:14px}
     .hero .wrap{width:min(100% - 32px,1360px)}.hero-inner{padding-top:82px}.hero-actions{gap:9px}.button{width:100%}.hero-caption{grid-template-columns:1fr}.evidence-ledger,.scale-strip,.gallery,.route-panel{grid-template-columns:1fr}.evidence-item{border-right:0!important}.evidence-item:not(:last-child){border-bottom:1px solid oklch(100% 0 0 / .12)}
     .section-head h2{max-width:100%;font-size:clamp(31px,10vw,44px)}.section-head p{font-size:16px}.capability{display:grid}.legend-row{font-size:10.5px}.media-figure,.feature-demo,.mine-demo{grid-column:1/-1}.media-figure figcaption{display:grid}.status-panel,.result-card{padding:20px}
     .result-proof{grid-template-columns:1fr}.proof-line strong{font-size:16px}table{font-size:12.5px}th,td{padding:9px 8px}td.metric,th.metric{font-size:11.8px}.results-action th:first-child,.results-action td:first-child{width:38%}.results-action th:nth-child(2),.results-action td:nth-child(2){width:20%}.results-action th:nth-child(3),.results-action td:nth-child(3){width:42%}
+    .mine-gallery{grid-template-columns:1fr}
   }
 </style>
 </head>
@@ -380,7 +386,7 @@
                   </tbody>
                 </table>
               </div>
-              <p class="note">I3D-FVD is not emphasized because it favors low-motion baselines in this setting.</p>
+              <p class="note"><b>How to read this table.</b> The model sees 16 past frames plus the action, then predicts the next 8 frames without looking at the real future (open-loop). <b>Last-frame</b> is the naive baseline that simply freezes the final observed frame, a hard bar for the question “did the model predict real motion, or just a still scene?” WM3D leads on every metric, and by the widest margin on <b>Motion RGB L1</b> (error scored only inside moving regions, −54.0%), so the wins come from predicting motion rather than from a static scene. I3D-FVD is de-emphasized because it favors low-motion baselines in this setting.</p>
             </div>
           </div>
         </article>
@@ -411,7 +417,7 @@
                   </tbody>
                 </table>
               </div>
-              <p class="note">These numbers support native-3D dynamics and action-conditioned controllability. They are not a substitute for closed-loop robot success.</p>
+              <p class="note"><b>How to read this table.</b> From one starting scene, WM3D predicts the future <em>geometry</em> (depth and point tokens) under the <b>real action</b> and under a set of <b>counterfactual actions</b> (zero, reversed, negated). A <b>win-rate</b> is the fraction of cases where the real action’s predicted geometry lands closer to the true future than the counterfactuals. Here <b>0.5 would mean the action made no difference</b>, so 0.77 to 0.87 shows the action genuinely drives the 3D state. The depth rows check accuracy directly: <b>sign acc 0.819</b> means the predicted depth change points the right way (nearer vs. farther) 81.9% of the time. These support native-3D controllability; they are not a substitute for closed-loop robot success.</p>
             </div>
           </div>
         </article>
@@ -425,8 +431,8 @@
       <div class="section-head">
         <p class="section-tag">Visual evidence</p>
         <div>
-          <h2>Visual rollouts across robot and game tasks.</h2>
-          <p>Robot clips show imagined futures against real futures. The Minecraft clip adds a discrete long-horizon task: craft a table, then place it in the world.</p>
+          <h2>Visual rollouts across robot embodiments.</h2>
+          <p>Each clip pairs an imagined future against the real future across different robots and cameras. The final panel is a counterfactual test: one starting observation, different action chunks, different imagined outcomes.</p>
         </div>
       </div>
       <div class="capability"><strong>Capability shown</strong><span>input: past video + task text + action chunk → output: future world state, depth/geometry, and coarse future video.</span></div>
@@ -436,9 +442,26 @@
         <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/demo_fractal.gif" width="512" height="512" alt="Fractal RT-1 robot prediction compared with ground truth" /><figcaption><span class="name">Fractal / RT-1</span><span class="meta">Google robot</span></figcaption></figure>
         <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/demo_jaco.gif" width="512" height="512" alt="Jaco Play robot prediction compared with ground truth" /><figcaption><span class="name">Jaco Play</span><span class="meta">Kinova Jaco</span></figcaption></figure>
         <figure class="media-figure feature-demo"><img loading="lazy" decoding="async" src="assets/counterfactual_droid.gif" width="800" height="540" alt="Counterfactual action test where the same starting observation produces different imagined futures under different action chunks" /><figcaption><span class="name">Robot counterfactual</span><span class="meta">same start, different action chunks</span></figcaption></figure>
-        <figure class="media-figure mine-demo"><img loading="lazy" decoding="async" src="assets/minecraft_crafting_table.gif" width="360" height="360" alt="Minecraft demo where the agent crafts a crafting table and places it in the world" /><figcaption><span class="name">Minecraft crafting table</span><span class="meta">craft, then place · demo clip</span></figcaption></figure>
-        <p class="gallery-note">The Minecraft clip is included as a qualitative task-domain demo rather than a benchmark claim; the quantitative evidence remains separated in the results section above.</p>
       </div>
+    </div>
+  </section>
+
+  <section id="minecraft" class="media-section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-tag">Open-world game domain</p>
+        <div>
+          <h2>The same model imagines Minecraft tasks.</h2>
+          <p>Beyond robot arms, WM3D runs on an open-world game domain, where progress means discrete, long-horizon goals: gather a resource, craft an item, then place it. Each clip is a full task carried out inside the model's imagined world.</p>
+        </div>
+      </div>
+      <div class="capability"><strong>Task setting</strong><span>input: past frames + task goal + action chunk → output: an imagined rollout that reaches a checkable game state (item crafted, block mined, table placed).</span></div>
+      <div class="mine-gallery">
+        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/minecraft_planks.gif" width="320" height="320" alt="Minecraft rollout where the agent turns logs into wooden planks" /><figcaption><span class="name">Craft planks</span><span class="meta">logs → wooden planks</span></figcaption></figure>
+        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/minecraft_cobblestone.gif" width="320" height="320" alt="Minecraft rollout where the agent mines stone and obtains cobblestone" /><figcaption><span class="name">Mine cobblestone</span><span class="meta">dig stone → cobblestone</span></figcaption></figure>
+        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/minecraft_crafting_table.gif" width="360" height="360" alt="Minecraft rollout where the agent crafts a crafting table and places it in the world" /><figcaption><span class="name">Craft &amp; place table</span><span class="meta">craft, then place</span></figcaption></figure>
+      </div>
+      <p class="mine-note">These are qualitative task-domain demos on the <a href="https://github.com/danijar/diamond_env" target="_blank" rel="noopener">Diamond Minecraft environment</a>, shown to illustrate long-horizon controllability rather than as a benchmark claim; the quantitative evidence stays separated in the results section above.</p>
     </div>
   </section>
 
