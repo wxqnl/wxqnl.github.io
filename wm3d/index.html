@@ -189,9 +189,12 @@
   .mine-gallery .media-figure{grid-column:auto}
   .mine-note{max-width:82ch;margin:22px auto 0;text-align:center;color:oklch(82% 0.03 255);font-size:14px;line-height:1.55}
   .mine-note a{color:var(--cyan)}
-  .rendering-pair{display:grid;gap:18px;max-width:930px;margin:0 auto}
-  .legend-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;color:oklch(82% 0.03 255);font:600 12.5px/1.3 var(--mono);text-align:center;margin-bottom:6px}
-  .rendering-note{max-width:78ch;margin:18px auto 0;text-align:center;color:oklch(82% 0.03 255);font-size:14px}
+  .render-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .render-figure{border:1px solid oklch(100% 0 0 / .15);border-radius:22px;overflow:hidden;background:oklch(100% 0 0 / .06);box-shadow:0 18px 55px oklch(7% 0.04 260 / .38)}
+  .render-figure video{display:block;width:100%;height:auto;aspect-ratio:1280/704;object-fit:cover;background:oklch(12% 0.045 260)}
+  .render-figure figcaption{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin:0;padding:13px 16px;border-top:1px solid oklch(100% 0 0 / .13);color:oklch(82% 0.03 255);font-size:13px}
+  .render-figure .name{color:white;font-weight:800;font-size:14px}.render-figure .meta{font-family:var(--mono);font-size:11.5px;color:oklch(75% 0.035 255)}
+  .rendering-note{max-width:80ch;margin:22px auto 0;text-align:center;color:oklch(82% 0.03 255);font-size:14px}
 
   .status-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:stretch}
   .status-panel{border:1px solid var(--line);border-radius:var(--radius-xl);background:var(--surface);padding:28px;box-shadow:var(--shadow-tight)}
@@ -220,7 +223,7 @@
     .hero .wrap{width:min(100% - 32px,1360px)}.hero-inner{padding-top:82px}.hero-actions{gap:9px}.button{width:100%}.hero-caption{grid-template-columns:1fr}.evidence-ledger,.scale-strip,.gallery,.route-panel{grid-template-columns:1fr}.evidence-item{border-right:0!important}.evidence-item:not(:last-child){border-bottom:1px solid oklch(100% 0 0 / .12)}
     .section-head h2{max-width:100%;font-size:clamp(31px,10vw,44px)}.section-head p{font-size:16px}.capability{display:grid}.legend-row{font-size:10.5px}.media-figure,.feature-demo,.mine-demo{grid-column:1/-1}.media-figure figcaption{display:grid}.status-panel,.result-card{padding:20px}
     .result-proof{grid-template-columns:1fr}.proof-line strong{font-size:16px}table{font-size:12.5px}th,td{padding:9px 8px}td.metric,th.metric{font-size:11.8px}.results-action th:first-child,.results-action td:first-child{width:38%}.results-action th:nth-child(2),.results-action td:nth-child(2){width:20%}.results-action th:nth-child(3),.results-action td:nth-child(3){width:42%}
-    .mine-gallery{grid-template-columns:1fr}
+    .mine-gallery,.render-grid{grid-template-columns:1fr}
   }
 </style>
 </head>
@@ -470,15 +473,24 @@
         <p class="section-tag">Rendering layer</p>
         <div>
           <h2>From imagined state to rendered video.</h2>
-          <p>The visual layer turns WM3D's rough future into a more detailed RGB clip. The latest architecture keeps this branch action-aware while preserving native-3D ownership.</p>
+          <p>The action-aware RGB branch renders WM3D's imagined future as full-motion video, with the predicted action read out on-screen. The same rendering path generalizes across very different worlds while native-3D stays the owner state.</p>
         </div>
       </div>
-      <div class="rendering-pair">
-        <div class="legend-row" aria-hidden="true"><span>rough WM prediction</span><span>rendered video</span><span>ground truth</span></div>
-        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/bridge_render_droid.gif" width="1536" height="320" alt="Droid rollout showing rough world-model prediction, rendered video, and ground truth" /><figcaption><span class="name">Droid</span><span class="meta">rough → render → ground truth</span></figcaption></figure>
-        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/bridge_render_taco.gif" width="1536" height="320" alt="Taco Play rollout showing rough world-model prediction, rendered video, and ground truth" /><figcaption><span class="name">Taco Play</span><span class="meta">rough → render → ground truth</span></figcaption></figure>
+      <div class="render-grid">
+        <figure class="render-figure">
+          <video src="assets/render_kitchen_mug.mp4" width="1280" height="704" autoplay muted loop playsinline preload="metadata" aria-label="Kitchen rollout: a hand moves a mug toward the dish rack, with predicted action and future frames rendered on screen"></video>
+          <figcaption><span class="name">Kitchen</span><span class="meta">mug → dish rack</span></figcaption>
+        </figure>
+        <figure class="render-figure">
+          <video src="assets/render_warehouse_pick.mp4" width="1280" height="704" autoplay muted loop playsinline preload="metadata" aria-label="Warehouse rollout: a robot arm picks and lifts a parcel, with predicted action and grip state rendered on screen"></video>
+          <figcaption><span class="name">Warehouse</span><span class="meta">robot parcel pick</span></figcaption>
+        </figure>
+        <figure class="render-figure">
+          <video src="assets/render_drive_expressway.mp4" width="1280" height="704" autoplay muted loop playsinline preload="metadata" aria-label="Driving rollout: a daylight expressway view follows a lead car, with steering, speed, and lane action rendered on screen"></video>
+          <figcaption><span class="name">Driving</span><span class="meta">daylight expressway</span></figcaption>
+        </figure>
       </div>
-      <p class="rendering-note">Earlier rendering demos show the role of a video prior. The current improvement is structural: the RGB branch is trained as action-video modeling rather than a passive post-processor.</p>
+      <p class="rendering-note">Manipulation, warehouse, and driving are rendered by one action-conditioned video branch. The improvement is structural: RGB is trained as action-video modeling downstream of the world state, not as a passive post-processor. Clips are muted and loop automatically.</p>
     </div>
   </section>
 
