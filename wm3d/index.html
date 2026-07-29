@@ -208,14 +208,6 @@
   .render-figure .name{color:white;font-weight:800;font-size:14px}.render-figure .meta{font-family:var(--mono);font-size:11.5px;color:oklch(75% 0.035 255)}
   .rendering-note{max-width:80ch;margin:22px auto 0;text-align:center;color:oklch(82% 0.03 255);font-size:14px}
 
-  .status-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:stretch}
-  .status-panel{border:1px solid var(--line);border-radius:var(--radius-xl);background:var(--surface);padding:28px;box-shadow:var(--shadow-tight)}
-  .status-panel h3{font-size:24px;margin-bottom:10px}.status-panel p{color:var(--muted)}
-  .status-list{display:grid;gap:12px}
-  .status-item{border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:18px 20px}
-  .status-item strong{display:flex;gap:10px;align-items:center;color:var(--ink);font-size:16px}.status-item p{color:var(--muted);font-size:14.5px;margin-top:7px}
-  .marker{font-family:var(--mono);font-weight:800}.done{color:var(--teal)}.progress{color:var(--amber)}
-
   footer{border-top:1px solid var(--line);padding:50px 0 68px;background:var(--surface);text-align:center}
   footer p{max-width:76ch;margin:0 auto;color:var(--muted);font-size:14.5px}.fin{margin-top:10px;color:oklch(55% 0.03 255);font-size:13px}
 
@@ -292,7 +284,7 @@
   }
   @media(max-width:860px){.chart-grid{grid-template-columns:1fr}}
   @media(max-width:980px){
-    .hero-inner,.section-head,.status-grid{grid-template-columns:1fr}
+    .hero-inner,.section-head{grid-template-columns:1fr}
     .hero-inner{padding-top:92px}.hero-copy{max-width:100%}h1{max-width:13ch}
     .section-tag{margin-top:0}.section-head h2{max-width:18ch}
     .evidence-ledger,.scale-strip{grid-template-columns:repeat(2,1fr)}.evidence-item:nth-child(2){border-right:0}.evidence-item:nth-child(-n+2){border-bottom:1px solid oklch(100% 0 0 / .12)}
@@ -304,7 +296,7 @@
   @media(max-width:700px){
     body{font-size:16px}.wrap{width:min(100% - 32px,1120px)}.backlink{position:absolute;left:16px;top:14px}
     .hero .wrap{width:min(100% - 32px,1360px)}.hero-inner{padding-top:82px}.hero-actions{gap:9px}.button{width:100%}.hero-caption{grid-template-columns:1fr}.evidence-ledger,.scale-strip,.gallery,.route-panel{grid-template-columns:1fr}.evidence-item{border-right:0!important}.evidence-item:not(:last-child){border-bottom:1px solid oklch(100% 0 0 / .12)}
-    .section-head h2{max-width:100%;font-size:clamp(31px,10vw,44px)}.section-head p{font-size:16px}.capability{display:grid}.legend-row{font-size:10.5px}.media-figure,.feature-demo,.mine-demo{grid-column:1/-1}.media-figure figcaption{display:grid}.status-panel,.result-card{padding:20px}
+    .section-head h2{max-width:100%;font-size:clamp(31px,10vw,44px)}.section-head p{font-size:16px}.capability{display:grid}.legend-row{font-size:10.5px}.media-figure,.feature-demo,.mine-demo{grid-column:1/-1}.media-figure figcaption{display:grid}.result-card{padding:20px}
     .result-proof{grid-template-columns:1fr}.proof-line strong{font-size:16px}table{font-size:12.5px}th,td{padding:8px 6px}td.metric,th.metric{font-size:11.2px}
     .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;background:
       linear-gradient(90deg,var(--surface) 30%,transparent),
@@ -348,8 +340,8 @@
       </div>
       <div class="hero-actions" aria-label="Page navigation">
         <a class="button primary" href="#method">Read the method</a>
-        <a class="button secondary" href="#results">See results</a>
         <a class="button secondary" href="#demos">Watch rollouts</a>
+        <a class="button secondary" href="#results">See results</a>
       </div>
     </div>
     <figure class="hero-visual">
@@ -388,7 +380,6 @@
       <div class="research-question reveal"><span class="label">Our argument</span><p>The primary state of a robotic world model should be native 3D geometry rather than image space.</p></div>
     </div>
   </section>
-
   <section id="comparison">
     <div class="wrap">
       <div class="section-head">
@@ -428,7 +419,6 @@
       <p class="lesson reveal"><b>Where the line falls:</b> current systems rarely maintain a single action-conditioned geometric state that simultaneously supports future prediction, visual inspection, executable action generation, and candidate selection. <b>WM3D's claim is that unification</b>, not the independent combination of a geometry encoder, a renderer, and a policy.</p>
     </div>
   </section>
-
   <section id="method" class="architecture">
     <div class="wrap">
       <div class="section-head">
@@ -459,7 +449,6 @@
       </div>
     </div>
   </section>
-
   <section id="scale">
     <div class="wrap">
       <div class="section-head">
@@ -478,7 +467,69 @@
       <p class="note reveal" style="max-width:82ch;margin-top:22px">Data is drawn from Open X-Embodiment-style datasets and a DROID subset. Each action carries six end-effector pose channels and one gripper channel. Training proceeds in stages: action-dependent 3D dynamics first, then rendering consistency as an auxiliary constraint, then policy and value alignment for closed-loop decisions.</p>
     </div>
   </section>
-
+  <section id="demos" class="media-section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-tag">Visual evidence</p>
+        <div>
+          <h2>Visual rollouts across robot embodiments.</h2>
+          <p>Each clip pairs an imagined future against the real future across different robots and cameras. The final panel is the counterfactual test made visible: one starting observation, different action chunks, different imagined outcomes.</p>
+        </div>
+      </div>
+      <div class="capability"><strong>Capability shown</strong><span>input: past video + task text + action chunk → output: future geometric state, decoded depth and points, and optional RGB.</span></div>
+      <div class="gallery reveal">
+        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/demo_droid.gif" width="512" height="512" alt="Droid Franka robot prediction compared with ground truth" /><figcaption><span class="name">Droid</span><span class="meta">Franka · 7-DoF</span></figcaption></figure>
+        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/demo_bridge.gif" width="512" height="512" alt="Bridge WidowX robot prediction compared with ground truth" /><figcaption><span class="name">Bridge</span><span class="meta">WidowX · tabletop</span></figcaption></figure>
+        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/demo_fractal.gif" width="512" height="512" alt="Fractal RT-1 robot prediction compared with ground truth" /><figcaption><span class="name">Fractal / RT-1</span><span class="meta">Google robot</span></figcaption></figure>
+        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/demo_jaco.gif" width="512" height="512" alt="Jaco Play robot prediction compared with ground truth" /><figcaption><span class="name">Jaco Play</span><span class="meta">Kinova Jaco</span></figcaption></figure>
+        <figure class="media-figure feature-demo"><img loading="lazy" decoding="async" src="assets/counterfactual_droid.gif" width="800" height="540" alt="Counterfactual action test where the same starting observation produces different imagined futures under different action chunks" /><figcaption><span class="name">Robot counterfactual</span><span class="meta">same start, different action chunks</span></figcaption></figure>
+      </div>
+    </div>
+  </section>
+  <section id="minecraft" class="media-section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-tag">Open-world game domain</p>
+        <div>
+          <h2>Minecraft tasks.</h2>
+          <p>Beyond robot arms, the same formulation runs on an open-world game domain, where progress means discrete, long-horizon goals: gather a resource, craft an item, then place it. Each clip is a full task carried out inside the model's imagined world.</p>
+        </div>
+      </div>
+      <div class="capability"><strong>Task setting</strong><span>input: past frames + task goal + action chunk → output: an imagined rollout that reaches a checkable game state (item crafted, block mined, table placed).</span></div>
+      <div class="mine-gallery reveal">
+        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/minecraft_planks.gif" width="320" height="320" alt="Minecraft rollout where the agent turns logs into wooden planks" /><figcaption><span class="name">Craft planks</span><span class="meta">logs → wooden planks</span></figcaption></figure>
+        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/minecraft_cobblestone.gif" width="320" height="320" alt="Minecraft rollout where the agent mines stone and obtains cobblestone" /><figcaption><span class="name">Mine cobblestone</span><span class="meta">dig stone → cobblestone</span></figcaption></figure>
+        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/minecraft_crafting_table.gif" width="320" height="320" alt="Minecraft rollout where the agent crafts a crafting table and places it in the world" /><figcaption><span class="name">Craft &amp; place table</span><span class="meta">craft, then place</span></figcaption></figure>
+      </div>
+      <p class="mine-note">These are qualitative task-domain demos on the <a href="https://github.com/danijar/diamond_env" target="_blank" rel="noopener">Diamond Minecraft environment</a>, shown to illustrate long-horizon controllability rather than as a benchmark claim; the quantitative evidence stays separated in the results section that follows.</p>
+    </div>
+  </section>
+  <section id="rendering" class="media-section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-tag">Rendering layer</p>
+        <div>
+          <h2>From imagined state to rendered video.</h2>
+          <p>The rendering branch receives structured conditions from the native-3D core and is conditioned on the same actions that determine geometric evolution, with the predicted action read out on-screen. It exists for inspection and training consistency, and one path generalizes across very different worlds.</p>
+        </div>
+      </div>
+      <div class="render-grid reveal">
+        <figure class="render-figure">
+          <video src="assets/render_kitchen_mug.mp4" width="1280" height="704" autoplay muted loop playsinline preload="metadata" aria-label="Kitchen rollout: a hand moves a mug toward the dish rack, with predicted action and future frames rendered on screen"></video>
+          <figcaption><span class="name">Kitchen</span><span class="meta">mug → dish rack</span></figcaption>
+        </figure>
+        <figure class="render-figure">
+          <video src="assets/render_warehouse_pick.mp4" width="1280" height="704" autoplay muted loop playsinline preload="metadata" aria-label="Warehouse rollout: a robot arm picks and lifts a parcel, with predicted action and grip state rendered on screen"></video>
+          <figcaption><span class="name">Warehouse</span><span class="meta">robot parcel pick</span></figcaption>
+        </figure>
+        <figure class="render-figure">
+          <video src="assets/render_drive_expressway.mp4" width="1280" height="704" autoplay muted loop playsinline preload="metadata" aria-label="Driving rollout: a daylight expressway view follows a lead car, with steering, speed, and lane action rendered on screen"></video>
+          <figcaption><span class="name">Driving</span><span class="meta">daylight expressway</span></figcaption>
+        </figure>
+      </div>
+      <p class="rendering-note">Manipulation, warehouse, and driving are rendered by one action-conditioned branch that sits downstream of the world state, not as a passive post-processor. In preliminary tests it reduces motion-region L1 from 0.14 for copy-last to 0.07, though matched comparisons against specialized video generators remain incomplete. This branch does not define the dynamics state and never participates in candidate ranking. Clips are muted and loop automatically.</p>
+    </div>
+  </section>
   <section id="results">
     <div class="wrap">
       <div class="section-head">
@@ -635,7 +686,6 @@
       </div>
     </div>
   </section>
-
   <section id="control">
     <div class="wrap">
       <div class="section-head">
@@ -717,94 +767,6 @@
       </div>
     </div>
   </section>
-
-  <section id="demos" class="media-section">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="section-tag">Visual evidence</p>
-        <div>
-          <h2>Visual rollouts across robot embodiments.</h2>
-          <p>Each clip pairs an imagined future against the real future across different robots and cameras. The final panel is the counterfactual test made visible: one starting observation, different action chunks, different imagined outcomes.</p>
-        </div>
-      </div>
-      <div class="capability"><strong>Capability shown</strong><span>input: past video + task text + action chunk → output: future geometric state, decoded depth and points, and optional RGB.</span></div>
-      <div class="gallery reveal">
-        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/demo_droid.gif" width="512" height="512" alt="Droid Franka robot prediction compared with ground truth" /><figcaption><span class="name">Droid</span><span class="meta">Franka · 7-DoF</span></figcaption></figure>
-        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/demo_bridge.gif" width="512" height="512" alt="Bridge WidowX robot prediction compared with ground truth" /><figcaption><span class="name">Bridge</span><span class="meta">WidowX · tabletop</span></figcaption></figure>
-        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/demo_fractal.gif" width="512" height="512" alt="Fractal RT-1 robot prediction compared with ground truth" /><figcaption><span class="name">Fractal / RT-1</span><span class="meta">Google robot</span></figcaption></figure>
-        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/demo_jaco.gif" width="512" height="512" alt="Jaco Play robot prediction compared with ground truth" /><figcaption><span class="name">Jaco Play</span><span class="meta">Kinova Jaco</span></figcaption></figure>
-        <figure class="media-figure feature-demo"><img loading="lazy" decoding="async" src="assets/counterfactual_droid.gif" width="800" height="540" alt="Counterfactual action test where the same starting observation produces different imagined futures under different action chunks" /><figcaption><span class="name">Robot counterfactual</span><span class="meta">same start, different action chunks</span></figcaption></figure>
-      </div>
-    </div>
-  </section>
-
-  <section id="minecraft" class="media-section">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="section-tag">Open-world game domain</p>
-        <div>
-          <h2>Minecraft tasks.</h2>
-          <p>Beyond robot arms, the same formulation runs on an open-world game domain, where progress means discrete, long-horizon goals: gather a resource, craft an item, then place it. Each clip is a full task carried out inside the model's imagined world.</p>
-        </div>
-      </div>
-      <div class="capability"><strong>Task setting</strong><span>input: past frames + task goal + action chunk → output: an imagined rollout that reaches a checkable game state (item crafted, block mined, table placed).</span></div>
-      <div class="mine-gallery reveal">
-        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/minecraft_planks.gif" width="320" height="320" alt="Minecraft rollout where the agent turns logs into wooden planks" /><figcaption><span class="name">Craft planks</span><span class="meta">logs → wooden planks</span></figcaption></figure>
-        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/minecraft_cobblestone.gif" width="320" height="320" alt="Minecraft rollout where the agent mines stone and obtains cobblestone" /><figcaption><span class="name">Mine cobblestone</span><span class="meta">dig stone → cobblestone</span></figcaption></figure>
-        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/minecraft_crafting_table.gif" width="320" height="320" alt="Minecraft rollout where the agent crafts a crafting table and places it in the world" /><figcaption><span class="name">Craft &amp; place table</span><span class="meta">craft, then place</span></figcaption></figure>
-      </div>
-      <p class="mine-note">These are qualitative task-domain demos on the <a href="https://github.com/danijar/diamond_env" target="_blank" rel="noopener">Diamond Minecraft environment</a>, shown to illustrate long-horizon controllability rather than as a benchmark claim; the quantitative evidence stays separated in the results section above.</p>
-    </div>
-  </section>
-
-  <section id="rendering" class="media-section">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="section-tag">Rendering layer</p>
-        <div>
-          <h2>From imagined state to rendered video.</h2>
-          <p>The rendering branch receives structured conditions from the native-3D core and is conditioned on the same actions that determine geometric evolution, with the predicted action read out on-screen. It exists for inspection and training consistency, and one path generalizes across very different worlds.</p>
-        </div>
-      </div>
-      <div class="render-grid reveal">
-        <figure class="render-figure">
-          <video src="assets/render_kitchen_mug.mp4" width="1280" height="704" autoplay muted loop playsinline preload="metadata" aria-label="Kitchen rollout: a hand moves a mug toward the dish rack, with predicted action and future frames rendered on screen"></video>
-          <figcaption><span class="name">Kitchen</span><span class="meta">mug → dish rack</span></figcaption>
-        </figure>
-        <figure class="render-figure">
-          <video src="assets/render_warehouse_pick.mp4" width="1280" height="704" autoplay muted loop playsinline preload="metadata" aria-label="Warehouse rollout: a robot arm picks and lifts a parcel, with predicted action and grip state rendered on screen"></video>
-          <figcaption><span class="name">Warehouse</span><span class="meta">robot parcel pick</span></figcaption>
-        </figure>
-        <figure class="render-figure">
-          <video src="assets/render_drive_expressway.mp4" width="1280" height="704" autoplay muted loop playsinline preload="metadata" aria-label="Driving rollout: a daylight expressway view follows a lead car, with steering, speed, and lane action rendered on screen"></video>
-          <figcaption><span class="name">Driving</span><span class="meta">daylight expressway</span></figcaption>
-        </figure>
-      </div>
-      <p class="rendering-note">Manipulation, warehouse, and driving are rendered by one action-conditioned branch that sits downstream of the world state, not as a passive post-processor. In preliminary tests it reduces motion-region L1 from 0.14 for copy-last to 0.07, though matched comparisons against specialized video generators remain incomplete. This branch does not define the dynamics state and never participates in candidate ranking. Clips are muted and loop automatically.</p>
-    </div>
-  </section>
-
-  <section id="status">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="section-tag">Limitations and future work</p>
-        <div>
-          <h2>What this does not yet show.</h2>
-          <p>The results support native-3D dynamics as a shared foundation for prediction, action generation, and control through imagined futures. Several boundaries are worth stating plainly.</p>
-        </div>
-      </div>
-      <div class="status-grid">
-        <article class="status-panel reveal"><h3>Inherited from the frozen tokenizer</h3><p>WM3D inherits the errors of its frozen geometry tokenizer on transparent or reflective surfaces, under severe occlusion, and with atypical cameras. Because that same encoder supplies supervision, teacher agreement and independently measured accuracy are kept separate throughout.</p></article>
-        <div class="status-list">
-          <article class="status-item reveal"><strong><span class="marker progress">◐</span> Long-horizon control</strong><p>LIBERO-Long is the weakest suite at 73.2, well behind the 5B video baselines. Average success also trails them.</p></article>
-          <article class="status-item reveal d1"><strong><span class="marker progress">◐</span> Physical validation is thin</strong><p>Ten trials of a single-arm pick-and-place task. Enough to be suggestive, not enough for a significance claim.</p></article>
-          <article class="status-item reveal d2"><strong><span class="marker progress">◐</span> Renderer not benchmarked</strong><p>The auxiliary renderer targets inspection and action consistency. Matched comparisons of its coarse RGB head against specialized generators remain incomplete.</p></article>
-          <article class="status-item reveal d3"><strong><span class="marker progress">◐</span> Scale and ablations</strong><p>Compute and memory limit the core to 1B parameters. Next steps are scaling to 5B and completing component ablations while keeping native 3D as the principal state.</p></article>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section id="citation">
     <div class="wrap">
       <div class="section-head">
