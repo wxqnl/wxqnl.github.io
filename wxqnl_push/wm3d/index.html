@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WM3D: A Unified Native 3D World Model for Predicting Future States and Robot Actions</title>
+<meta name="description" content="WM3D is an action-conditioned world model whose state is native 3D geometry rather than image space. A 1B dynamics core trained from scratch reaches the highest WorldArena depth accuracy, improves every RoboNet metric over 5B video baselines, and lifts physical-robot success from 60% to 70% by ranking imagined futures." />
+<meta property="og:title" content="WM3D: A Unified Native 3D World Model for Predicting Future States and Robot Actions" />
+<meta property="og:description" content="Geometry is the state, video is a read-out. A 1B native-3D dynamics core that predicts future geometry, generates actions, and ranks imagined futures." />
+<meta property="og:type" content="website" />
+<style>
+  :root{
+    color-scheme: light;
+    --bg:oklch(98% 0.006 255);
+    --bg-alt:oklch(96% 0.012 255);
+    --surface:oklch(100% 0 0);
+    --surface-cool:oklch(97% 0.018 248);
+    --ink:oklch(18% 0.032 255);
+    --ink-soft:oklch(31% 0.044 255);
+    --muted:oklch(45% 0.036 255);
+    --muted-strong:oklch(38% 0.04 255);
+    --line:oklch(89% 0.014 255);
+    --line-strong:oklch(80% 0.026 255);
+    --deep:oklch(20% 0.075 260);
+    --deep-2:oklch(15% 0.058 260);
+    --blue:oklch(48% 0.205 265);
+    --blue-hot:oklch(59% 0.22 258);
+    --cyan:oklch(71% 0.145 205);
+    --teal:oklch(48% 0.13 175);
+    --violet:oklch(52% 0.16 295);
+    --amber:oklch(62% 0.15 72);
+    --blue-wash:oklch(94% 0.035 255);
+    --cyan-wash:oklch(94% 0.045 205);
+    --teal-wash:oklch(94% 0.04 175);
+    --amber-wash:oklch(95% 0.052 78);
+    --shadow-soft:0 24px 70px oklch(18% 0.032 255 / .13);
+    --shadow-tight:0 10px 28px oklch(18% 0.032 255 / .10);
+    --radius-xl:28px;
+    --radius-lg:20px;
+    --radius-md:14px;
+    --sans:-apple-system,BlinkMacSystemFont,"Aptos","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+    --ease-out:cubic-bezier(.16,1,.3,1);
+    --z-sticky:20;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;background:var(--bg)}
+  body{margin:0;background:var(--bg);color:var(--ink-soft);font-family:var(--sans);font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  body::selection{background:oklch(71% 0.145 205 / .28);color:var(--ink)}
+  a{color:var(--blue);text-decoration:none;text-underline-offset:3px}
+  a:hover{text-decoration:underline}
+  a:focus-visible,button:focus-visible{outline:3px solid var(--cyan);outline-offset:4px;border-radius:8px}
+  h1,h2,h3{color:var(--ink);line-height:1.08;margin:0;text-wrap:balance}
+  p{margin:0;text-wrap:pretty}
+  img{max-width:100%;height:auto}
+  .wrap{width:min(1120px,calc(100% - 44px));margin:0 auto}
+  .measure{max-width:74ch}
+  .skip{position:absolute;left:16px;top:10px;transform:translateY(-180%);background:var(--surface);color:var(--ink);padding:10px 14px;border:1px solid var(--line);border-radius:999px;z-index:calc(var(--z-sticky) + 1);transition:transform .18s var(--ease-out)}
+  .skip:focus{transform:none}
+  .backlink{position:fixed;top:18px;left:22px;z-index:var(--z-sticky);font-size:14px;color:oklch(87% 0.025 250);background:oklch(16% 0.055 260 / .78);border:1px solid oklch(100% 0 0 / .18);border-radius:999px;padding:8px 13px;backdrop-filter:blur(10px);box-shadow:0 8px 28px oklch(10% 0.04 260 / .26)}
+  .backlink:hover{color:white;text-decoration:none}
+
+  .hero{position:relative;overflow:hidden;color:oklch(93% 0.02 255);background:
+    radial-gradient(circle at 20% 18%, oklch(48% 0.205 265 / .42), transparent 28%),
+    radial-gradient(circle at 84% 30%, oklch(71% 0.145 205 / .22), transparent 31%),
+    linear-gradient(135deg,var(--deep-2),var(--deep) 58%,oklch(17% 0.072 225));
+    border-bottom:1px solid oklch(100% 0 0 / .13)}
+  .hero::before{content:"";position:absolute;inset:0;background:
+    linear-gradient(90deg,oklch(100% 0 0 / .045) 1px,transparent 1px),
+    linear-gradient(0deg,oklch(100% 0 0 / .035) 1px,transparent 1px);background-size:72px 72px;mask-image:linear-gradient(180deg,black,transparent 88%);pointer-events:none}
+  .hero::after{content:"";position:absolute;inset:12% -18% auto auto;width:42rem;height:42rem;border:1px solid oklch(71% 0.145 205 / .25);border-radius:38% 62% 54% 46%;transform:rotate(-18deg);pointer-events:none}
+  .hero .wrap{width:min(1360px,calc(100% - 44px))}
+  .hero-inner{position:relative;z-index:1;padding:clamp(96px,11vw,142px) 0 clamp(46px,7vw,82px);display:grid;grid-template-columns:1fr;gap:clamp(34px,5vw,58px);align-items:center}
+  .hero-inner > div:first-child{max-width:940px}
+  .surface-label{display:inline-flex;align-items:center;gap:10px;color:oklch(86% 0.065 222);font:700 14px/1.1 var(--mono);letter-spacing:.01em;margin-bottom:22px}
+  .surface-label::before{content:"";width:34px;height:2px;background:var(--cyan);border-radius:999px}
+  h1{font-family:var(--serif);font-size:clamp(46px,7vw,92px);letter-spacing:-.038em;color:white;max-width:13.2ch}
+  h1 em{font-style:normal;color:var(--cyan)}
+  .hero-copy{font-size:clamp(18px,2.1vw,22px);line-height:1.55;color:oklch(88% 0.025 252);max-width:66ch;margin-top:24px}
+  .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+  .button{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:12px 18px;border-radius:999px;font-weight:760;font-size:14.5px;border:1px solid transparent;transition:transform .22s var(--ease-out),border-color .22s var(--ease-out),background .22s var(--ease-out);text-decoration:none}
+  .button.primary{background:white;color:var(--deep)}
+  .button.secondary{color:white;border-color:oklch(100% 0 0 / .24);background:oklch(100% 0 0 / .07)}
+  .button:hover{transform:translateY(-2px);text-decoration:none}
+  .hero-visual{position:relative;animation:settle .7s var(--ease-out) both}
+  .hero-frame{position:relative;border:1px solid oklch(100% 0 0 / .18);border-radius:34px;overflow:hidden;background:oklch(100% 0 0 / .06);box-shadow:0 36px 110px oklch(8% 0.04 260 / .50)}
+  .hero-frame img{display:block;width:100%}
+  .hero-frame::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 78%,oklch(10% 0.06 260 / .36));pointer-events:none}
+  .hero-caption{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;margin-top:14px;color:oklch(83% 0.025 255);font-size:13.5px;line-height:1.48}
+  .hero-caption .chip{font-family:var(--mono);font-size:12px;color:var(--cyan);border:1px solid oklch(71% 0.145 205 / .32);padding:4px 8px;border-radius:999px;white-space:nowrap}
+  .evidence-ledger{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid oklch(100% 0 0 / .13);background:oklch(10% 0.045 260 / .28)}
+  .evidence-item{padding:18px clamp(18px,3vw,32px);border-right:1px solid oklch(100% 0 0 / .12);min-height:112px}
+  .evidence-item:last-child{border-right:0}
+  .evidence-item strong{display:block;color:white;font-size:clamp(22px,2.5vw,30px);font-weight:820;letter-spacing:-.03em;line-height:1.05}
+  .evidence-item span{display:block;color:oklch(82% 0.026 255);font-size:13px;line-height:1.45;margin-top:8px;max-width:24ch}
+
+  main{background:var(--bg)}
+  section{padding:clamp(72px,9vw,118px) 0;border-top:1px solid var(--line)}
+  section:first-child{border-top:0}
+  .section-head{display:grid;grid-template-columns:minmax(170px,.32fr) minmax(0,.68fr);gap:clamp(24px,5vw,60px);align-items:start;margin-bottom:clamp(34px,5vw,60px)}
+  .section-tag{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-weight:760;color:var(--blue);font-size:13px;line-height:1.35;letter-spacing:0;margin-top:.48rem}
+  .section-tag::before{content:"";width:9px;height:9px;border-radius:999px;background:var(--cyan);box-shadow:inset 0 0 0 2px oklch(100% 0 0 / .9)}
+  .section-head h2{font-family:var(--serif);font-size:clamp(32px,4.8vw,56px);letter-spacing:-.035em;max-width:14.6ch;margin-bottom:16px}
+  .section-head p{font-size:clamp(16.5px,1.55vw,19px);line-height:1.58;color:var(--muted-strong);max-width:66ch}
+
+  .fault-lines{display:grid;grid-template-columns:1fr;gap:12px;max-width:960px;margin-left:auto}
+  .fault{display:grid;grid-template-columns:210px 1fr;gap:24px;align-items:start;padding:22px 0;border-top:1px solid var(--line)}
+  .fault:last-child{border-bottom:1px solid var(--line)}
+  .fault h3{font-size:20px;letter-spacing:-.018em}
+  .fault p{color:var(--muted);max-width:72ch}
+  .research-question{margin-top:34px;border:1px solid oklch(48% 0.205 265 / .24);border-radius:var(--radius-xl);background:linear-gradient(135deg,var(--surface),var(--blue-wash));padding:26px clamp(22px,4vw,34px);box-shadow:var(--shadow-tight);display:grid;grid-template-columns:190px 1fr;gap:18px;align-items:center}
+  .research-question .label{font-weight:800;color:var(--blue)}
+  .research-question p{font-size:20px;line-height:1.42;color:var(--ink);font-family:var(--serif)}
+
+  .model-landscape{display:grid;grid-template-columns:.92fr 1.16fr .92fr;gap:18px;align-items:stretch}
+  .model-lane{position:relative;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);padding:24px;box-shadow:var(--shadow-tight)}
+  .model-lane.wm3d{border-color:oklch(48% 0.205 265 / .42);background:linear-gradient(180deg,var(--surface),var(--blue-wash))}
+  .lane-name{display:inline-flex;border:1px solid var(--line-strong);border-radius:999px;padding:5px 10px;color:var(--muted-strong);font:700 12px/1.1 var(--mono)}
+  .wm3d .lane-name{color:var(--blue);border-color:oklch(48% 0.205 265 / .26);background:var(--surface)}
+  .model-lane h3{font-size:23px;margin:18px 0 10px;letter-spacing:-.025em}
+  .model-lane p{color:var(--muted);font-size:15.5px}
+  .model-lane ul{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:10px;color:var(--muted);font-size:14.5px;line-height:1.45}
+  .model-lane li{display:grid;grid-template-columns:16px 1fr;gap:9px}
+  .model-lane li::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--line-strong);margin-top:.52em}
+  .wm3d li::before{background:var(--blue)}
+  .lesson{margin-top:22px;border:1px solid oklch(71% 0.145 205 / .35);border-radius:var(--radius-lg);background:oklch(96% 0.025 220);padding:21px 24px;color:oklch(30% 0.07 230)}
+  .lesson b{color:var(--blue)}
+
+  .architecture{background:linear-gradient(180deg,var(--bg-alt),var(--bg))}
+  .architecture .wrap{width:min(1360px,calc(100% - 44px))}
+  .architecture-grid{display:grid;grid-template-columns:1fr;gap:26px;align-items:start}
+  .diagram-stage{border:1px solid var(--line);border-radius:34px;background:var(--surface);padding:16px;box-shadow:var(--shadow-soft);max-width:1280px;margin:0 auto;width:100%}
+  .diagram-stage img{display:block;border-radius:24px;width:100%;background:var(--surface-cool)}
+  .diagram-stage figcaption{padding:15px 10px 2px;color:var(--muted);font-size:13.5px;line-height:1.5;text-align:center}
+  .route-panel{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;max-width:1280px;margin:0 auto;width:100%}
+  .route-step{border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:19px 20px;display:grid;gap:12px;align-items:start}
+  .route-step .role{font:760 12px/1.2 var(--mono);color:var(--blue);padding-top:3px}
+  .route-step h3{font-size:18px;margin-bottom:5px}
+  .route-step p{font-size:14.5px;color:var(--muted)}
+  .owner-boundary{border:1px solid oklch(48% 0.13 175 / .35);border-radius:20px;background:linear-gradient(135deg,var(--surface),var(--teal-wash));padding:22px;color:oklch(30% 0.07 175)}
+  .owner-boundary h3{font-size:20px;color:oklch(27% 0.08 175);margin-bottom:8px}
+  .owner-boundary p{font-size:15px;color:oklch(34% 0.06 175)}
+
+  .scale-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;border:1px solid var(--line);border-radius:var(--radius-xl);overflow:hidden;background:var(--line);box-shadow:var(--shadow-tight)}
+  .scale-item{background:var(--surface);padding:25px 22px;min-height:156px;display:flex;flex-direction:column;justify-content:space-between}
+  .scale-item strong{font-family:var(--serif);font-size:clamp(31px,4vw,46px);line-height:1;color:var(--ink);letter-spacing:-.04em}
+  .scale-item span{font-size:13.5px;line-height:1.45;color:var(--muted);margin-top:16px}
+
+  .result-grid{display:grid;grid-template-columns:1fr;gap:24px;align-items:start}
+  .result-card{border:1px solid var(--line);border-radius:var(--radius-xl);background:var(--surface);padding:clamp(18px,2.4vw,28px);box-shadow:var(--shadow-tight)}
+  .result-card h3{font-size:clamp(22px,2.4vw,30px);margin-bottom:6px;letter-spacing:-.026em;max-width:28ch}
+  .result-deck{display:grid;grid-template-columns:minmax(220px,.34fr) minmax(0,.66fr);gap:clamp(18px,3vw,30px);align-items:start}
+  .result-card,.result-deck>*,.result-deck>*>*{min-width:0}
+  .result-copy{display:flex;flex-direction:column;min-height:100%;justify-content:space-between;gap:18px}
+  .result-kicker{font-family:var(--mono);font-size:12px;line-height:1.3;color:var(--blue);font-weight:760;margin-bottom:13px}
+  .result-summary{font-size:15.5px;line-height:1.6;color:var(--muted);max-width:46ch}
+  .result-proof{display:grid;gap:10px;margin-top:2px}
+  .proof-line{display:flex;align-items:baseline;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding-top:11px;color:var(--muted);font-size:13.5px}
+  .proof-line strong{font-family:var(--mono);font-size:18px;line-height:1;color:var(--teal);font-weight:850;white-space:nowrap}
+  .table-wrap{overflow:visible;border:1px solid var(--line);border-radius:18px;background:var(--surface)}
+  table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13.5px}
+  th,td{padding:10px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle;overflow-wrap:anywhere}
+  th{font-size:11.5px;color:var(--muted-strong);font-weight:780;background:var(--surface-cool)}
+  tr:last-child td{border-bottom:0}
+  td.metric,th.metric{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.8px;color:var(--ink);white-space:nowrap;overflow-wrap:normal}
+  .results-worldarena th:first-child,.results-worldarena td:first-child{width:22%}
+  .results-worldarena th:not(:first-child),.results-worldarena td:not(:first-child){width:11.14%}
+  .results-robonet th:first-child,.results-robonet td:first-child{width:24%}
+  .results-robonet th:not(:first-child),.results-robonet td:not(:first-child){width:19%}
+  .results-action th:first-child,.results-action td:first-child{width:34%}
+  .results-action th:not(:first-child),.results-action td:not(:first-child){width:22%}
+  .results-libero th:first-child,.results-libero td:first-child{width:30%}
+  .results-libero th:not(:first-child),.results-libero td:not(:first-child){width:11.66%}
+  .results-real th:first-child,.results-real td:first-child{width:34%}
+  .results-real th:nth-child(2),.results-real td:nth-child(2){width:14%}
+  .results-real th:nth-child(3),.results-real td:nth-child(3){width:26%}
+  .results-real th:nth-child(4),.results-real td:nth-child(4){width:26%}
+  .win{color:var(--teal);font-weight:850}
+  .wm-row{background:oklch(94% 0.03 245)}
+  .note{font-size:13.6px;color:var(--muted);line-height:1.55;margin-top:14px}
+  .benchmark-note{margin-top:24px;border:1px solid oklch(62% 0.15 72 / .35);border-radius:var(--radius-lg);background:var(--amber-wash);padding:20px 22px;color:oklch(34% 0.07 72)}
+  .benchmark-note b{color:oklch(42% 0.12 72)}
+
+  .media-section{background:var(--deep);color:oklch(89% 0.025 255)}
+  .media-section h2,.media-section h3{color:white}
+  .media-section .section-tag{color:var(--cyan)}
+  .media-section .section-head p{color:oklch(82% 0.03 255)}
+  .capability{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;border:1px solid oklch(100% 0 0 / .14);border-radius:22px;background:oklch(100% 0 0 / .055);padding:18px 20px;margin-bottom:28px}
+  .capability strong{color:white}.capability span{color:oklch(82% 0.03 255);font:500 13.5px/1.55 var(--mono);max-width:72ch}
+  .gallery{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
+  .media-figure{grid-column:span 3;border:1px solid oklch(100% 0 0 / .15);border-radius:24px;overflow:hidden;background:oklch(100% 0 0 / .06);box-shadow:0 18px 55px oklch(7% 0.04 260 / .38)}
+  .media-figure img{display:block;width:100%;background:oklch(12% 0.045 260)}
+  .media-figure figcaption{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin:0;padding:13px 16px;border-top:1px solid oklch(100% 0 0 / .13);color:oklch(82% 0.03 255);font-size:13px}
+  .media-figure .name{color:white;font-weight:800;font-size:14px}.media-figure .meta{font-family:var(--mono);font-size:11.5px;color:oklch(75% 0.035 255)}
+  .wide{grid-column:1/-1}
+  .feature-demo{grid-column:1/-1;max-width:840px;width:100%;margin:0 auto}
+  .gallery-note{grid-column:1/-1;color:oklch(82% 0.03 255);font-size:14px;line-height:1.55;max-width:82ch;margin:4px auto 0;text-align:center}
+  .mine-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .mine-gallery .media-figure{grid-column:auto}
+  .mine-note{max-width:82ch;margin:22px auto 0;text-align:center;color:oklch(82% 0.03 255);font-size:14px;line-height:1.55}
+  .mine-note a{color:var(--cyan)}
+  .driving-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:32px}
+  .stat-item{border:1px solid oklch(100% 0 0 / .14);border-radius:18px;background:oklch(100% 0 0 / .055);padding:22px 20px;text-align:center}
+  .stat-value{display:block;font-family:var(--serif);font-size:clamp(36px,5vw,52px);line-height:1;color:white;letter-spacing:-.04em;margin-bottom:10px}
+  .stat-label{display:block;font-size:13px;line-height:1.4;color:oklch(82% 0.03 255);font-weight:600}
+  .driving-video{border:1px solid oklch(100% 0 0 / .15);border-radius:24px;overflow:hidden;background:oklch(100% 0 0 / .06);box-shadow:0 18px 55px oklch(7% 0.04 260 / .38);max-width:1140px;margin:0 auto}
+  .driving-video video{display:block;width:100%;height:auto;background:oklch(12% 0.045 260)}
+  .render-grid{display:grid;grid-template-columns:1fr;gap:26px;max-width:940px;margin:0 auto}
+  .render-figure{border:1px solid oklch(100% 0 0 / .15);border-radius:22px;overflow:hidden;background:oklch(100% 0 0 / .06);box-shadow:0 18px 55px oklch(7% 0.04 260 / .38)}
+  .render-figure video{display:block;width:100%;height:auto;aspect-ratio:1280/704;object-fit:cover;background:oklch(12% 0.045 260)}
+  .render-figure figcaption{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin:0;padding:13px 16px;border-top:1px solid oklch(100% 0 0 / .13);color:oklch(82% 0.03 255);font-size:13px}
+  .render-figure .name{color:white;font-weight:800;font-size:14px}.render-figure .meta{font-family:var(--mono);font-size:11.5px;color:oklch(75% 0.035 255)}
+  .rendering-note{max-width:80ch;margin:22px auto 0;text-align:center;color:oklch(82% 0.03 255);font-size:14px}
+
+  footer{border-top:1px solid var(--line);padding:50px 0 68px;background:var(--surface);text-align:center}
+  footer p{max-width:76ch;margin:0 auto;color:var(--muted);font-size:14.5px}.fin{margin-top:10px;color:oklch(55% 0.03 255);font-size:13px}
+
+  /* authors */
+  .authors{margin-top:28px;max-width:74ch}
+  .author-line{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:16px;color:oklch(91% 0.02 252);line-height:1.5}
+  .author-line span{white-space:nowrap}
+  .author-line sup{font-size:11px;color:var(--cyan);font-family:var(--mono);margin-left:1px}
+  .affil{margin-top:12px;display:flex;flex-wrap:wrap;gap:6px 20px;font-size:13.5px;color:oklch(80% 0.028 255)}
+  .affil sup{color:var(--cyan);font-family:var(--mono);font-size:11px}
+
+  /* state definition */
+  .state-def{border:1px solid oklch(48% 0.205 265 / .22);border-radius:var(--radius-xl);background:linear-gradient(135deg,var(--surface),var(--blue-wash));padding:26px clamp(20px,3.4vw,34px);box-shadow:var(--shadow-tight);max-width:1280px;margin:0 auto;width:100%}
+  .state-eq{font-family:var(--mono);font-size:clamp(19px,2.4vw,27px);color:var(--ink);letter-spacing:-.01em;line-height:1.5;overflow-wrap:anywhere}
+  .state-eq .eq-lhs{color:var(--blue);font-weight:800}
+  .state-eq .eq-term{color:var(--teal);font-weight:700}
+  .state-legend{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
+  .state-legend div{border-top:1px solid oklch(48% 0.205 265 / .22);padding-top:11px}
+  .state-legend b{display:block;font-family:var(--mono);font-size:15px;color:var(--blue)}
+  .state-legend span{display:block;font-size:13.5px;color:var(--muted);margin-top:4px;line-height:1.42}
+  .state-note{margin-top:20px;font-size:15px;line-height:1.55;color:var(--muted-strong);max-width:78ch}
+
+  /* consistency panel */
+  .consistency-panel{display:grid;gap:14px}
+  .consistency-item{display:grid;grid-template-columns:minmax(88px,auto) 1fr;gap:16px;align-items:baseline;border-top:1px solid var(--line);padding-top:13px}
+  .consistency-item:first-child{border-top:0;padding-top:0}
+  .consistency-item b{font-family:var(--mono);font-size:19px;color:var(--teal);font-weight:850;white-space:nowrap}
+  .consistency-item span{font-size:14.5px;line-height:1.5;color:var(--muted)}
+
+  /* research questions */
+  .q-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:clamp(28px,4vw,42px)}
+  .q-item{display:grid;grid-template-columns:auto 1fr;gap:13px;align-items:start;border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:17px 19px;box-shadow:var(--shadow-tight)}
+  .q-item .q-num{font-family:var(--mono);font-weight:800;font-size:13px;color:var(--blue);border:1px solid oklch(48% 0.205 265 / .28);border-radius:999px;padding:3px 9px;line-height:1.3}
+  .q-item p{font-size:14.5px;line-height:1.5;color:var(--muted)}
+
+  /* chart primitives */
+  .chart{border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);padding:22px 24px 18px;box-shadow:var(--shadow-tight)}
+  .chart h3{font-size:17px;letter-spacing:-.018em;margin-bottom:4px}
+  .chart .chart-sub{font-size:13.5px;color:var(--muted);line-height:1.5;margin-bottom:18px}
+  .bars{display:grid;gap:13px}
+  .bar-row{display:grid;grid-template-columns:minmax(96px,.28fr) minmax(0,1fr) 62px;gap:12px;align-items:center;font-size:13px}
+  .bar-row .bar-name{color:var(--muted-strong);font-weight:700;overflow-wrap:anywhere}
+  .bar-track{position:relative;height:12px;border-radius:999px;background:oklch(93% 0.014 255);overflow:hidden}
+  .bar-fill{position:absolute;inset:0 auto 0 0;width:var(--w);border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--cyan));transform:scaleX(0);transform-origin:left center;transition:transform 1.05s var(--ease-out)}
+  .bar-row.is-ours .bar-fill{background:linear-gradient(90deg,var(--teal),var(--cyan))}
+  .bar-row.is-base .bar-fill{background:oklch(72% 0.03 255)}
+  .revealed .bar-fill{transform:scaleX(1)}
+  .bar-val{font-family:var(--mono);font-size:12.5px;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
+  .bar-row.is-ours .bar-val{color:var(--teal);font-weight:800}
+  .chance-note{margin-top:14px;font-size:12.5px;color:var(--muted);font-family:var(--mono)}
+  .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+
+  /* grouped counterfactual chart */
+  .cf-group{display:grid;gap:9px;padding:14px 0;border-top:1px solid var(--line)}
+  .cf-group:first-of-type{border-top:0;padding-top:2px}
+  .cf-group .cf-label{font-weight:800;color:var(--ink);font-size:14px}
+  .cf-group .cf-hint{font-size:12.5px;color:var(--muted);margin-top:-4px}
+
+  /* bibtex */
+  .cite-block{border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-cool);padding:20px 22px;overflow-x:auto}
+  .cite-block pre{margin:0;font-family:var(--mono);font-size:12.5px;line-height:1.6;color:var(--ink-soft);white-space:pre}
+
+  /* scroll reveal */
+  .reveal{opacity:0;transform:translate3d(0,18px,0);transition:opacity .7s var(--ease-out),transform .7s var(--ease-out)}
+  .reveal.revealed{opacity:1;transform:none}
+  .reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}.reveal.d3{transition-delay:.24s}
+
+  @keyframes settle{from{opacity:.96;transform:translate3d(0,10px,0) scale(.992);filter:blur(1px)}to{opacity:1;transform:none;filter:none}}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+    .reveal{opacity:1;transform:none}
+    .bar-fill{transform:scaleX(1)}
+  }
+  @media(max-width:860px){.chart-grid{grid-template-columns:1fr}}
+  @media(max-width:980px){
+    .hero-inner,.section-head{grid-template-columns:1fr}
+    .hero-inner{padding-top:92px}.hero-copy{max-width:100%}h1{max-width:13ch}
+    .section-tag{margin-top:0}.section-head h2{max-width:18ch}
+    .evidence-ledger,.scale-strip{grid-template-columns:repeat(2,1fr)}.evidence-item:nth-child(2){border-right:0}.evidence-item:nth-child(-n+2){border-bottom:1px solid oklch(100% 0 0 / .12)}
+    .model-landscape{grid-template-columns:1fr}.fault{grid-template-columns:1fr;gap:8px}.research-question{grid-template-columns:1fr}.route-panel{grid-template-columns:1fr 1fr}.route-step{grid-template-columns:1fr;gap:8px}
+    .result-deck{grid-template-columns:1fr}.result-copy{min-height:auto}.result-proof{grid-template-columns:1fr 1fr}
+    .mine-gallery{grid-template-columns:repeat(3,1fr)}
+    .q-strip{grid-template-columns:1fr}
+  }
+  @media(max-width:700px){
+    body{font-size:16px}.wrap{width:min(100% - 32px,1120px)}.backlink{position:absolute;left:16px;top:14px}
+    .hero .wrap{width:min(100% - 32px,1360px)}.hero-inner{padding-top:82px}.hero-actions{gap:9px}.button{width:100%}.hero-caption{grid-template-columns:1fr}.evidence-ledger,.scale-strip,.gallery,.route-panel{grid-template-columns:1fr}.evidence-item{border-right:0!important}.evidence-item:not(:last-child){border-bottom:1px solid oklch(100% 0 0 / .12)}
+    .section-head h2{max-width:100%;font-size:clamp(31px,10vw,44px)}.section-head p{font-size:16px}.capability{display:grid}.legend-row{font-size:10.5px}.media-figure,.feature-demo,.mine-demo{grid-column:1/-1}.media-figure figcaption{display:grid}.result-card{padding:20px}
+    .result-proof{grid-template-columns:1fr}.proof-line strong{font-size:16px}table{font-size:12.5px}th,td{padding:8px 6px}td.metric,th.metric{font-size:11.2px}
+    .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;background:
+      linear-gradient(90deg,var(--surface) 30%,transparent),
+      linear-gradient(90deg,transparent,var(--surface) 70%) 100% 0,
+      radial-gradient(farthest-side at 0 50%,oklch(18% 0.032 255 / .16),transparent),
+      radial-gradient(farthest-side at 100% 50%,oklch(18% 0.032 255 / .16),transparent) 100% 0;
+      background-repeat:no-repeat;background-size:44px 100%,44px 100%,14px 100%,14px 100%;background-attachment:local,local,scroll,scroll}
+    .results-worldarena,.results-libero{min-width:520px}
+    .results-robonet,.results-action,.results-real{min-width:340px}
+    .consistency-item{grid-template-columns:1fr;gap:5px}
+    .mine-gallery,.render-grid{grid-template-columns:1fr}
+    .bar-row{grid-template-columns:minmax(72px,.34fr) minmax(0,1fr) 54px;gap:9px;font-size:12.5px}
+    .state-legend{grid-template-columns:1fr 1fr}.state-def{padding:20px 18px}
+    .q-strip{grid-template-columns:1fr}
+    .author-line{font-size:15px}
+    .chart{padding:18px 16px 16px}
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<a href="/" class="backlink">← Mingquan Liu</a>
+
+<header class="hero">
+  <div class="wrap hero-inner">
+    <div>
+      <p class="surface-label">WM3D / Native-3D world model</p>
+      <h1>A unified world model whose state is <em>native 3D</em>.</h1>
+      <p class="hero-copy">Robots do not act on pixels. WM3D predicts future depth, point structure, and pose in one action-conditioned geometric state, then generates executable actions and ranks imagined futures from that same state. RGB is a rendered read-out, not the state.</p>
+      <div class="authors">
+        <p class="author-line">
+          <span>Mingquan Liu<sup>1</sup>,</span>
+          <span>Chenhao Qiu,</span>
+          <span>Jiayi Li<sup>1</sup>,</span>
+          <span>Shanming Yao<sup>1</sup>,</span>
+          <span>Sixu Lin,</span>
+          <span>Guiliang Liu,</span>
+          <span>Simo Wu<sup>1,&dagger;</sup></span>
+        </p>
+        <p class="affil"><span><sup>1</sup>Luxitech</span><span><sup>&dagger;</sup>Corresponding author</span></p>
+      </div>
+      <div class="hero-actions" aria-label="Page navigation">
+        <a class="button primary" href="#method">Read the method</a>
+        <a class="button secondary" href="#demos">Watch rollouts</a>
+        <a class="button secondary" href="#results">See results</a>
+      </div>
+    </div>
+    <figure class="hero-visual">
+      <div class="hero-frame">
+        <picture>
+          <source type="image/webp" srcset="assets/wm3d_overview.webp" />
+          <img src="assets/wm3d_overview.png" width="1800" height="1080" alt="WM3D overview: a frozen VGGT encoder turns RGB history into 3D state tokens alongside task and action tokens, a shared dynamics core with bidirectional cross-attention between a 3D state stream and an action stream predicts future 3D tokens, and joint heads decode future depth, points and pose, optional RGB, a flow action policy, and candidate value ranking" />
+        </picture>
+      </div>
+      <figcaption class="hero-caption"><span class="chip">Overview of WM3D</span><span>One action-conditioned geometric transition model feeds three interfaces: future-geometry prediction, executable action generation, and candidate ranking. RGB decoding is optional and never enters ranking.</span></figcaption>
+    </figure>
+  </div>
+  <div class="evidence-ledger" aria-label="WM3D headline evidence">
+    <div class="evidence-item"><strong>0.91 depth</strong><span>Highest depth accuracy on WorldArena v1, above 5B video baselines.</span></div>
+    <div class="evidence-item"><strong>327.6 FVD</strong><span>Best on all four RoboNet metrics with a 1B core against 5B cores.</span></div>
+    <div class="evidence-item"><strong>0.944 win</strong><span>Recorded actions beat sign-flipped actions in geometry-token space.</span></div>
+    <div class="evidence-item"><strong>60 &rarr; 70%</strong><span>Physical-robot success when imagined futures rank candidate actions.</span></div>
+  </div>
+</header>
+
+<main id="main">
+  <section id="problem">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-tag">Problem framing</p>
+        <div>
+          <h2>A rollout can look right and still be physically impossible.</h2>
+          <p>Recent robotic world models predict the future as RGB video. The rollouts are visually compelling, but they learn how appearance evolves rather than how the physical world changes, so they can remain wrong in depth, contact, rigid-body motion, or camera pose.</p>
+        </div>
+      </div>
+      <div class="fault-lines reveal">
+        <article class="fault"><h3>Appearance is not the objective</h3><p>Action selection depends on physically grounded reasoning over scene geometry, object pose, depth, contact, rigid-body motion, and camera configuration. Predicting pixels is only an intermediate step toward that.</p></article>
+        <article class="fault"><h3>Plausible but impossible futures</h3><p>A model can predict a successful grasp under an incorrect end-effector pose, move an object without valid contact, or break geometric consistency across viewpoints. Such failures undermine reachability, collision avoidance, and contact planning.</p></article>
+        <article class="fault"><h3>Partial solutions today</h3><p>Video models keep geometry implicit in pixels. Latent dynamics models compress the future into hidden states with limited access to predicted structure. Vision-language-action models skip explicit future prediction entirely.</p></article>
+      </div>
+      <div class="research-question reveal"><span class="label">Our argument</span><p>The primary state of a robotic world model should be native 3D geometry rather than image space.</p></div>
+    </div>
+  </section>
+  <section id="comparison">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-tag">World-model paradigms</p>
+        <div>
+          <h2>Four paradigms, separated by what geometry is for.</h2>
+          <p>The distinction is not whether a model touches 3D, but whether 3D is the state that evolves under action. WM3D makes geometry both the predictive substrate and the decision interface.</p>
+        </div>
+      </div>
+      <figure class="diagram-stage reveal" style="margin-bottom:30px">
+        <picture>
+          <source type="image/webp" srcset="assets/wm3d_paradigms.webp" />
+          <img loading="lazy" decoding="async" src="assets/wm3d_paradigms.png" width="1800" height="1013" alt="Four-panel comparison: a visual world model where 3D is implicit and inferred afterward, a geometry-assisted model where 3D is an auxiliary loss, a 3D dynamics model where 3D predicts dynamics for planning, and WM3D where native 3D state unifies future prediction, action generation, candidate ranking, and optional RGB" />
+        </picture>
+        <figcaption>Comparison of world-model paradigms, distinguished by the role of geometry in state representation, future prediction, planning, and action selection.</figcaption>
+      </figure>
+      <div class="model-landscape reveal">
+        <article class="model-lane">
+          <span class="lane-name">(a) &amp; (b)</span>
+          <h3>3D implicit, or 3D as auxiliary loss</h3>
+          <p>Visual world models predict future RGB and recover 3D afterward. Geometry-assisted models add a 3D loss beside the visual state.</p>
+          <ul><li>Strong appearance and temporal priors.</li><li>Depth, scale, and contact stay implicit in pixels.</li><li>Geometry never becomes the state that evolves under action.</li></ul>
+        </article>
+        <article class="model-lane wm3d">
+          <span class="lane-name">(d) WM3D</span>
+          <h3>Native 3D unifies prediction and action</h3>
+          <p>One geometric state carries depth, point structure, pose, and geometry tokens, conditioned on task language and candidate actions.</p>
+          <ul><li>Future geometry, executable actions, and candidate scores come from the same transition model.</li><li>Candidates are compared in the 3D state, with no per-candidate video generation.</li><li>RGB decoding is optional and excluded from ranking.</li></ul>
+        </article>
+        <article class="model-lane">
+          <span class="lane-name">(c)</span>
+          <h3>3D predicts dynamics</h3>
+          <p>3D dynamics models forecast geometric futures for planning, which is the closest prior family to ours.</p>
+          <ul><li>Geometry does drive prediction.</li><li>Action generation and candidate scoring usually sit in separate models.</li><li>The predicted state is not the decision interface.</li></ul>
+        </article>
+      </div>
+      <p class="lesson reveal"><b>Where the line falls:</b> current systems rarely maintain a single action-conditioned geometric state that simultaneously supports future prediction, visual inspection, executable action generation, and candidate selection. <b>WM3D's claim is that unification</b>, not the independent combination of a geometry encoder, a renderer, and a policy.</p>
+    </div>
+  </section>
+  <section id="method" class="architecture">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-tag">Method</p>
+        <div>
+          <h2>One action-conditioned geometric transition model.</h2>
+          <p>A frozen geometry foundation model builds the native-3D state from observation history. A dual-stream dynamics core then predicts how that state evolves under task language and a candidate action chunk, and every downstream interface reads from the result.</p>
+        </div>
+      </div>
+      <div class="architecture-grid">
+        <div class="state-def reveal">
+          <p class="state-eq"><span class="eq-lhs">S<sup>3D</sup><sub>t</sub></span> = ( <span class="eq-term">Z<sup>geo</sup><sub>t</sub></span> , <span class="eq-term">D<sub>t</sub></span> , <span class="eq-term">X<sub>t</sub></span> , <span class="eq-term">&xi;<sub>t</sub></span> )</p>
+          <div class="state-legend">
+            <div><b>Z<sup>geo</sup></b><span>geometry tokens</span></div>
+            <div><b>D</b><span>depth map</span></div>
+            <div><b>X</b><span>point-level 3D structure</span></div>
+            <div><b>&xi;</b><span>pose parameters</span></div>
+          </div>
+          <p class="state-note">These quantities are not auxiliary supervision. They constitute the predictive state whose evolution is conditioned on the robot action.</p>
+        </div>
+        <div class="route-panel reveal">
+          <article class="route-step"><span class="role">Encode</span><div><h3>Frozen geometry encoder</h3><p>A frozen VGGT-1B encoder maps the observation history to geometry tokens, depth, point maps, and pose. Representations are cached before large-scale training, so the encoder never runs in the training loop.</p></div></article>
+          <article class="route-step"><span class="role">Predict</span><div><h3>Dual-stream dynamics core</h3><p>A state stream carries scene-level geometric evolution while an action stream represents the future action sequence. Bidirectional cross-attention exchanges information, so different actions yield different geometric futures.</p></div></article>
+          <article class="route-step"><span class="role">Decode</span><div><h3>Joint prediction heads</h3><p>Geometry heads decode future depth, point structure, and pose. A flow-matching policy head emits executable end-effector and gripper commands from the same state.</p></div></article>
+          <article class="route-step"><span class="role">Rank</span><div><h3>Propose, imagine, rank, execute</h3><p>K candidate action chunks are each passed through the same core. A value head scores the predicted futures on progress and feasibility, and the highest-scoring candidate is executed.</p></div></article>
+        </div>
+        <div class="owner-boundary reveal"><h3>Claim boundary: RGB is not the state</h3><p>A separate rendering branch decodes predicted geometry into RGB for inspection and training consistency. It does not define the dynamics state and is excluded from candidate ranking and final action generation. Because the frozen encoder also supplies supervision, we report agreement with the teacher representation separately from independently measured accuracy and downstream control.</p></div>
+      </div>
+    </div>
+  </section>
+  <section id="scale">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-tag">Training setup</p>
+        <div>
+          <h2>1B parameters, trained from scratch.</h2>
+          <p>The WM3D core carries no initialization from pretrained video generators, VLMs, or VLA models. Robot videos are converted once into cached native-3D supervision, so the geometry encoder never runs online during large-scale training.</p>
+        </div>
+      </div>
+      <div class="scale-strip reveal" aria-label="WM3D training facts">
+        <div class="scale-item"><strong>1.2&#8202;&times;&#8202;10<sup>5</sup></strong><span>cached robot windows spanning roughly 400 hours of trajectories</span></div>
+        <div class="scale-item"><strong>1B</strong><span>action-conditioned dynamics core, trained entirely from scratch</span></div>
+        <div class="scale-item"><strong>T=16, k=8</strong><span>historical observations per window and future action steps predicted</span></div>
+        <div class="scale-item"><strong>64 &times; 2048</strong><span>geometry tokens per frame and feature width from the frozen encoder</span></div>
+      </div>
+      <p class="note reveal" style="max-width:82ch;margin-top:22px">Data is drawn from Open X-Embodiment-style datasets and a DROID subset. Each action carries six end-effector pose channels and one gripper channel. Training proceeds in stages: action-dependent 3D dynamics first, then rendering consistency as an auxiliary constraint, then policy and value alignment for closed-loop decisions.</p>
+    </div>
+  </section>
+  <section id="demos" class="media-section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-tag">Visual evidence</p>
+        <div>
+          <h2>Visual rollouts across robot embodiments.</h2>
+          <p>Each clip pairs an imagined future against the real future across different robots and cameras. The final panel is the counterfactual test made visible: one starting observation, different action chunks, different imagined outcomes.</p>
+        </div>
+      </div>
+      <div class="capability"><strong>Capability shown</strong><span>input: past video + task text + action chunk → output: future geometric state, decoded depth and points, and optional RGB.</span></div>
+      <div class="gallery reveal">
+        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/demo_droid.gif" width="512" height="512" alt="Droid Franka robot prediction compared with ground truth" /><figcaption><span class="name">Droid</span><span class="meta">Franka · 7-DoF</span></figcaption></figure>
+        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/demo_bridge.gif" width="512" height="512" alt="Bridge WidowX robot prediction compared with ground truth" /><figcaption><span class="name">Bridge</span><span class="meta">WidowX · tabletop</span></figcaption></figure>
+        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/demo_fractal.gif" width="512" height="512" alt="Fractal RT-1 robot prediction compared with ground truth" /><figcaption><span class="name">Fractal / RT-1</span><span class="meta">Google robot</span></figcaption></figure>
+        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/demo_jaco.gif" width="512" height="512" alt="Jaco Play robot prediction compared with ground truth" /><figcaption><span class="name">Jaco Play</span><span class="meta">Kinova Jaco</span></figcaption></figure>
+        <figure class="media-figure feature-demo"><img loading="lazy" decoding="async" src="assets/counterfactual_droid.gif" width="800" height="540" alt="Counterfactual action test where the same starting observation produces different imagined futures under different action chunks" /><figcaption><span class="name">Robot counterfactual</span><span class="meta">same start, different action chunks</span></figcaption></figure>
+      </div>
+    </div>
+  </section>
+  <section id="driving" class="media-section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-tag">Autonomous driving</p>
+        <div>
+          <h2>Long-horizon closed-loop driving.</h2>
+          <p>WM3D completes dense urban routes with pedestrians, traffic, and dynamic signals. Town01 rainy scenario: 656 meters, 15 vehicles, 12 pedestrians. Left: WM3D. Right: TCP baseline (NeurIPS 2022).</p>
+        </div>
+      </div>
+      <div class="driving-stats reveal">
+        <div class="stat-item"><span class="stat-value">100%</span><span class="stat-label">Task success</span></div>
+        <div class="stat-item"><span class="stat-value">0.0</span><span class="stat-label">Collisions / km</span></div>
+        <div class="stat-item"><span class="stat-value">42%</span><span class="stat-label">Comfort pass rate</span></div>
+        <div class="stat-item"><span class="stat-value">−64%</span><span class="stat-label">Avoidable stall time</span></div>
+      </div>
+      <div class="driving-video reveal">
+        <video src="assets/driving_demo.mp4" width="1920" height="1080" controls playsinline preload="metadata" aria-label="Side-by-side comparison of WM3D and TCP baseline driving through Town01 rainy scenario with traffic and pedestrians"></video>
+      </div>
+      <p class="mine-note">Results from Town01 &amp; Town02 (two towns, two weather conditions). WM3D shows smoother actions and less unnecessary stopping; TCP has faster inference and better lane-keeping. Video played at 1.5× speed.</p>
+    </div>
+  </section>
+  <section id="minecraft" class="media-section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-tag">Open-world game domain</p>
+        <div>
+          <h2>Minecraft tasks.</h2>
+          <p>Beyond robot arms, the same formulation runs on an open-world game domain, where progress means discrete, long-horizon goals: gather a resource, craft an item, then place it. Each clip is a full task carried out inside the model's imagined world.</p>
+        </div>
+      </div>
+      <div class="capability"><strong>Task setting</strong><span>input: past frames + task goal + action chunk → output: an imagined rollout that reaches a checkable game state (item crafted, block mined, table placed).</span></div>
+      <div class="mine-gallery reveal">
+        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/minecraft_planks.gif" width="320" height="320" alt="Minecraft rollout where the agent turns logs into wooden planks" /><figcaption><span class="name">Craft planks</span><span class="meta">logs → wooden planks</span></figcaption></figure>
+        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/minecraft_cobblestone.gif" width="320" height="320" alt="Minecraft rollout where the agent mines stone and obtains cobblestone" /><figcaption><span class="name">Mine cobblestone</span><span class="meta">dig stone → cobblestone</span></figcaption></figure>
+        <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/minecraft_crafting_table.gif" width="320" height="320" alt="Minecraft rollout where the agent crafts a crafting table and places it in the world" /><figcaption><span class="name">Craft &amp; place table</span><span class="meta">craft, then place</span></figcaption></figure>
+      </div>
+      <p class="mine-note">These are qualitative task-domain demos on the <a href="https://github.com/danijar/diamond_env" target="_blank" rel="noopener">Diamond Minecraft environment</a>, shown to illustrate long-horizon controllability rather than as a benchmark claim; the quantitative evidence stays separated in the results section that follows.</p>
+    </div>
+  </section>
+  <section id="rendering" class="media-section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-tag">Rendering layer</p>
+        <div>
+          <h2>From imagined state to rendered video.</h2>
+          <p>The rendering branch receives structured conditions from the native-3D core and is conditioned on the same actions that determine geometric evolution, with the predicted action read out on-screen. It exists for inspection and training consistency, and one path generalizes across very different worlds.</p>
+        </div>
+      </div>
+      <div class="render-grid reveal">
+        <figure class="render-figure">
+          <video src="assets/render_kitchen_mug.mp4" width="1280" height="704" autoplay muted loop playsinline preload="metadata" aria-label="Kitchen rollout: a hand moves a mug toward the dish rack, with predicted action and future frames rendered on screen"></video>
+          <figcaption><span class="name">Kitchen</span><span class="meta">mug → dish rack</span></figcaption>
+        </figure>
+        <figure class="render-figure">
+          <video src="assets/render_warehouse_pick.mp4" width="1280" height="704" autoplay muted loop playsinline preload="metadata" aria-label="Warehouse rollout: a robot arm picks and lifts a parcel, with predicted action and grip state rendered on screen"></video>
+          <figcaption><span class="name">Warehouse</span><span class="meta">robot parcel pick</span></figcaption>
+        </figure>
+        <figure class="render-figure">
+          <video src="assets/render_drive_expressway.mp4" width="1280" height="704" autoplay muted loop playsinline preload="metadata" aria-label="Driving rollout: a daylight expressway view follows a lead car, with steering, speed, and lane action rendered on screen"></video>
+          <figcaption><span class="name">Driving</span><span class="meta">daylight expressway</span></figcaption>
+        </figure>
+      </div>
+      <p class="rendering-note">Manipulation, warehouse, and driving are rendered by one action-conditioned branch that sits downstream of the world state, not as a passive post-processor. In preliminary tests it reduces motion-region L1 from 0.14 for copy-last to 0.07, though matched comparisons against specialized video generators remain incomplete. This branch does not define the dynamics state and never participates in candidate ranking. Clips are muted and loop automatically.</p>
+    </div>
+  </section>
+  <section id="results">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-tag">Evidence with claim boundaries</p>
+        <div>
+          <h2>Three questions, measured separately.</h2>
+          <p>How competitive is a compact native-3D world model against much larger video models? Do the predicted geometric states respond to changes in the action? Can the same state support closed-loop control? Each is reported on its own terms, never collapsed into one number.</p>
+        </div>
+      </div>
+      <div class="q-strip reveal">
+        <div class="q-item"><span class="q-num">Q1</span><p>Competitive future prediction against 5B video baselines.</p></div>
+        <div class="q-item"><span class="q-num">Q2</span><p>Predicted geometry responds to the conditioning action.</p></div>
+        <div class="q-item"><span class="q-num">Q3</span><p>The same state supports closed-loop control and imagination-based selection.</p></div>
+      </div>
+      <div class="result-grid">
+        <article class="result-card reveal">
+          <div class="result-deck">
+            <div class="result-copy">
+              <div>
+                <p class="result-kicker">Q1 · WorldArena v1</p>
+                <h3>The highest depth accuracy, with a fifth of the core.</h3>
+                <p class="result-summary">All methods are evaluated on the same 500-video test split from RoboTwin 2.0 Clean50. WM3D's overall EWMScore sits between the two baselines while its depth prediction leads outright.</p>
+              </div>
+              <div class="result-proof" aria-label="WorldArena result highlights">
+                <div class="proof-line"><span>Depth accuracy</span><strong>0.91</strong></div>
+                <div class="proof-line"><span>Core size</span><strong>1B vs 5B</strong></div>
+              </div>
+            </div>
+            <div>
+              <div class="table-wrap">
+                <table class="results-worldarena">
+                  <thead><tr><th>Model</th><th class="metric">Core</th><th class="metric">EWM</th><th class="metric">JEPA</th><th class="metric">Motion</th><th class="metric">Interact.</th><th class="metric">Traj.</th><th class="metric">Depth</th></tr></thead>
+                  <tbody>
+                    <tr><td>Wan2.2</td><td class="metric">5B</td><td class="metric">50.99</td><td class="metric">0.80</td><td class="metric">0.68</td><td class="metric">0.52</td><td class="metric">0.15</td><td class="metric">0.82</td></tr>
+                    <tr><td>Fast-WAM</td><td class="metric">5B</td><td class="metric">43.16</td><td class="metric">0.47</td><td class="metric">0.63</td><td class="metric">0.37</td><td class="metric">0.20</td><td class="metric">0.89</td></tr>
+                    <tr class="wm-row"><td><b>WM3D</b></td><td class="metric">1B</td><td class="metric">49.68</td><td class="metric">0.35</td><td class="metric">0.59</td><td class="metric">0.32</td><td class="metric">0.15</td><td class="metric win">0.91</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="note"><b>How to read this table.</b> WorldArena v1 scores embodied prediction across appearance, motion, interaction, trajectory, and depth. WM3D's EWMScore of 49.68 is 1.31 points below Wan2.2 and 6.52 above Fast-WAM. We do not lead the JEPA, motion, interaction, or trajectory dimensions. The point of the table is the depth column: with a 1B dynamics core against 5B cores, geometric prediction is where the native-3D state pays off.</p>
+            </div>
+          </div>
+        </article>
+        <article class="result-card reveal">
+          <div class="result-deck">
+            <div class="result-copy">
+              <div>
+                <p class="result-kicker">Q1 · RoboNet</p>
+                <h3>Best on all four metrics under a matched protocol.</h3>
+                <p class="result-summary">Same 256-video test split, same two observation frames in, same ten frames out at 64&#8202;&times;&#8202;64. Metrics are computed only over predicted frames, with SSIM and LPIPS on a 0&ndash;100 scale.</p>
+              </div>
+              <div class="result-proof" aria-label="RoboNet result highlights">
+                <div class="proof-line"><span>FVD</span><strong>774.5 &rarr; 327.6</strong></div>
+                <div class="proof-line"><span>PSNR</span><strong>21.05 &rarr; 26.46</strong></div>
+              </div>
+            </div>
+            <div>
+              <div class="table-wrap">
+                <table class="results-robonet">
+                  <thead><tr><th>Model</th><th class="metric">Core</th><th class="metric">FVD ↓</th><th class="metric">PSNR ↑</th><th class="metric">SSIM ↑</th><th class="metric">LPIPS ↓</th></tr></thead>
+                  <tbody>
+                    <tr><td>Wan2.2</td><td class="metric">5B</td><td class="metric">774.52</td><td class="metric">21.05</td><td class="metric">73.43</td><td class="metric">20.47</td></tr>
+                    <tr><td>Fast-WAM</td><td class="metric">5B</td><td class="metric">1044.97</td><td class="metric">20.44</td><td class="metric">70.19</td><td class="metric">24.60</td></tr>
+                    <tr class="wm-row"><td><b>WM3D</b></td><td class="metric">1B</td><td class="metric win">327.57</td><td class="metric win">26.46</td><td class="metric win">86.61</td><td class="metric win">8.34</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="chart" style="margin-top:18px">
+                <h3>RoboNet FVD, lower is better</h3>
+                <p class="chart-sub">Bars are scaled to the worst result, so shorter is better.</p>
+                <div class="bars" data-animate="bars">
+                  <div class="bar-row is-base"><span class="bar-name">Fast-WAM 5B</span><span class="bar-track"><span class="bar-fill" style="--w:100%"></span></span><span class="bar-val">1044.97</span></div>
+                  <div class="bar-row is-base"><span class="bar-name">Wan2.2 5B</span><span class="bar-track"><span class="bar-fill" style="--w:74.1%"></span></span><span class="bar-val">774.52</span></div>
+                  <div class="bar-row is-ours"><span class="bar-name">WM3D 1B</span><span class="bar-track"><span class="bar-fill" style="--w:31.3%"></span></span><span class="bar-val">327.57</span></div>
+                </div>
+              </div>
+              <p class="note">Under this matched observation, prediction-horizon, resolution, and test-split setting, the 1B native-3D core provides a stronger future representation than the larger video-centric baselines. These comparisons measure overall system performance; they are not capacity-matched ablations.</p>
+            </div>
+          </div>
+        </article>
+        <article class="result-card reveal">
+          <div class="result-deck">
+            <div class="result-copy">
+              <div>
+                <p class="result-kicker">Q2 · Counterfactual action sensitivity</p>
+                <h3>The predicted geometry moves when the action changes.</h3>
+                <p class="result-summary">Video metrics cannot establish whether a world model captured the geometric consequence of an action. We compare the recorded action against three counterfactuals directly in the native state space, on a frozen 160-window split.</p>
+              </div>
+              <div class="result-proof" aria-label="Action sensitivity highlights">
+                <div class="proof-line"><span>Sign flip, token</span><strong>0.944</strong></div>
+                <div class="proof-line"><span>Zero action, depth</span><strong>0.869</strong></div>
+              </div>
+            </div>
+            <div>
+              <div class="table-wrap">
+                <table class="results-action">
+                  <thead><tr><th>Signal</th><th class="metric">Zero</th><th class="metric">Sign flip</th><th class="metric">Grip toggle</th></tr></thead>
+                  <tbody>
+                    <tr class="wm-row"><td>Token cosine win ↑</td><td class="metric win">0.856</td><td class="metric win">0.944</td><td class="metric">0.638</td></tr>
+                    <tr class="wm-row"><td>Depth win ↑</td><td class="metric win">0.869</td><td class="metric win">0.894</td><td class="metric">0.550</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="chart" style="margin-top:18px">
+                <h3>Recorded-action win rate, n = 160</h3>
+                <p class="chart-sub">A win means the recorded action's predicted future landed closer to the observed outcome than the counterfactual's. 0.5 is chance: the action made no difference.</p>
+                <div class="bars" data-animate="bars">
+                  <div class="cf-group">
+                    <span class="cf-label">Zero action</span>
+                    <p class="cf-hint">The action is removed entirely.</p>
+                    <div class="bar-row is-ours"><span class="bar-name">Token</span><span class="bar-track"><span class="bar-fill" style="--w:85.6%"></span></span><span class="bar-val">0.856</span></div>
+                    <div class="bar-row is-ours"><span class="bar-name">Depth</span><span class="bar-track"><span class="bar-fill" style="--w:86.9%"></span></span><span class="bar-val">0.869</span></div>
+                  </div>
+                  <div class="cf-group">
+                    <span class="cf-label">Sign flip</span>
+                    <p class="cf-hint">The six pose channels are reversed.</p>
+                    <div class="bar-row is-ours"><span class="bar-name">Token</span><span class="bar-track"><span class="bar-fill" style="--w:94.4%"></span></span><span class="bar-val">0.944</span></div>
+                    <div class="bar-row is-ours"><span class="bar-name">Depth</span><span class="bar-track"><span class="bar-fill" style="--w:89.4%"></span></span><span class="bar-val">0.894</span></div>
+                  </div>
+                  <div class="cf-group">
+                    <span class="cf-label">Grip toggle</span>
+                    <p class="cf-hint">Only the discrete gripper state is switched.</p>
+                    <div class="bar-row"><span class="bar-name">Token</span><span class="bar-track"><span class="bar-fill" style="--w:63.8%"></span></span><span class="bar-val">0.638</span></div>
+                    <div class="bar-row"><span class="bar-name">Depth</span><span class="bar-track"><span class="bar-fill" style="--w:55.0%"></span></span><span class="bar-val">0.550</span></div>
+                  </div>
+                </div>
+                <p class="chance-note">chance = 0.500</p>
+              </div>
+              <p class="note"><b>How to read this.</b> WM3D is most sensitive to perturbations of continuous robot motion: recorded actions beat sign-flipped alternatives in 94.4% of geometry-token comparisons and 89.4% of depth comparisons. Gripper toggles separate far more weakly, at 0.638 and 0.550, which says the model captures pose-conditioned geometric evolution more reliably than the effect of a discrete gripper switch. The pattern holds across all five evaluation sources. Because these metrics are defined in WM3D's internal state, we report them as model diagnostics, not cross-model comparisons.</p>
+            </div>
+          </div>
+        </article>
+        <article class="result-card reveal">
+          <div class="result-deck">
+            <div class="result-copy">
+              <div>
+                <p class="result-kicker">Q2 · Future-state accuracy</p>
+                <h3>Independently measured, not just teacher agreement.</h3>
+                <p class="result-summary">On the frozen 192-window diagnostic split, we score how close the predicted future depth is and whether the predicted geometric change follows the direction of the observed change rather than reconstructing an average scene.</p>
+              </div>
+              <div class="result-proof" aria-label="Future state accuracy highlights">
+                <div class="proof-line"><span>Depth L1</span><strong>2.5 &times; 10<sup>&minus;2</sup></strong></div>
+                <div class="proof-line"><span>Change cosine</span><strong>0.7</strong></div>
+              </div>
+            </div>
+            <div class="consistency-panel">
+              <div class="consistency-item"><b>2.5 &times; 10<sup>&minus;2</sup></b><span>Future-depth L1 error on the frozen 192-window diagnostic split.</span></div>
+              <div class="consistency-item"><b>0.7</b><span>Depth-change cosine agreement: the predicted change follows the direction of the real one.</span></div>
+              <div class="consistency-item"><b>0.8</b><span>Aggregate win rate for the recorded-action future over its counterfactual in geometry-token space.</span></div>
+              <p class="note" style="margin-top:4px">The frozen encoder also supplies the supervision signal, so agreement with the teacher representation is reported separately from independently measured accuracy and from downstream control. Those closed-loop numbers follow below.</p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+  <section id="control">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-tag">Q3 · Closed-loop control</p>
+        <div>
+          <h2>Imagining the future changes which action gets executed.</h2>
+          <p>Two decision interfaces run on the same 1B core. <b>Direct</b> executes the policy output greedily. <b>Imagine-rank</b> predicts the native-3D future of several candidate action chunks and executes the one scoring highest on progress and feasibility.</p>
+        </div>
+      </div>
+      <div class="result-grid">
+        <article class="result-card reveal">
+          <div class="result-deck">
+            <div class="result-copy">
+              <div>
+                <p class="result-kicker">LIBERO · 2,000 episodes per method</p>
+                <h3>Ranking imagined futures adds 5.55 points of average success.</h3>
+                <p class="result-summary">Four suites, ten tasks each, 50 initial states per task, a 300-step horizon, identical initial conditions, and the official success detector.</p>
+              </div>
+              <div class="result-proof" aria-label="LIBERO highlights">
+                <div class="proof-line"><span>Direct &rarr; imagine-rank</span><strong>82.95 &rarr; 88.50</strong></div>
+                <div class="proof-line"><span>Best suite</span><strong>95.60 Object</strong></div>
+              </div>
+            </div>
+            <div>
+              <div class="table-wrap">
+                <table class="results-libero">
+                  <thead><tr><th>Model</th><th class="metric">Core</th><th class="metric">Spatial</th><th class="metric">Object</th><th class="metric">Goal</th><th class="metric">Long</th><th class="metric">Avg.</th></tr></thead>
+                  <tbody>
+                    <tr><td>Fast-WAM</td><td class="metric">5B</td><td class="metric">97.2</td><td class="metric">99.6</td><td class="metric">96.0</td><td class="metric">93.8</td><td class="metric">96.65</td></tr>
+                    <tr><td>Wan-OFT</td><td class="metric">5B</td><td class="metric">96.4</td><td class="metric">98.6</td><td class="metric">94.8</td><td class="metric">85.8</td><td class="metric">93.90</td></tr>
+                    <tr><td>WM3D (direct)</td><td class="metric">1B</td><td class="metric">92.4</td><td class="metric">87.8</td><td class="metric">85.0</td><td class="metric">66.6</td><td class="metric">82.95</td></tr>
+                    <tr class="wm-row"><td><b>WM3D (imagine-rank)</b></td><td class="metric">1B</td><td class="metric">93.0</td><td class="metric">95.6</td><td class="metric">92.2</td><td class="metric">73.2</td><td class="metric">88.50</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="note"><b>Where we fall short.</b> The 1B core supports strong closed-loop control, but it does not beat the 5B video-based baselines on average, and LIBERO-Long is the clear weakness at 73.2 against 93.8 for Fast-WAM. What the table does establish is that imagination-based selection improves every suite over direct execution using the same weights, with the largest gains on Object and Goal.</p>
+            </div>
+          </div>
+        </article>
+        <article class="result-card reveal">
+          <div class="result-deck">
+            <div class="result-copy">
+              <div>
+                <p class="result-kicker">Physical robot · single-arm pick-and-place</p>
+                <h3>60% to 70% success by ranking imagined futures.</h3>
+                <p class="result-summary">Trained on 53 teleoperated demonstrations and 19,136 frames at 30&#8202;fps, with head, overhead, and wrist views plus a seven-dimensional robot state. All views pass through the frozen geometry encoder; only the action policy is fine-tuned.</p>
+              </div>
+              <div class="result-proof" aria-label="Physical robot highlights">
+                <div class="proof-line"><span>Success</span><strong>7/10 trials</strong></div>
+                <div class="proof-line"><span>Cycles per episode</span><strong>2.60 &rarr; 2.70</strong></div>
+              </div>
+            </div>
+            <div>
+              <div class="table-wrap">
+                <table class="results-real">
+                  <thead><tr><th>Method</th><th class="metric">Core</th><th class="metric">Success (%) ↑</th><th class="metric">Cycles/ep. ↑</th></tr></thead>
+                  <tbody>
+                    <tr><td>Fast-WAM</td><td class="metric">5B</td><td class="metric">50</td><td class="metric">2.5</td></tr>
+                    <tr><td>Wan-OFT</td><td class="metric">5B</td><td class="metric">20</td><td class="metric">2.0</td></tr>
+                    <tr><td>WM3D (direct)</td><td class="metric">1B</td><td class="metric">60</td><td class="metric">2.6</td></tr>
+                    <tr class="wm-row"><td><b>WM3D (imagine-rank)</b></td><td class="metric">1B</td><td class="metric win">70</td><td class="metric win">2.7</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="chart" style="margin-top:18px">
+                <h3>Physical-robot success rate</h3>
+                <p class="chart-sub">Ten trials per method on the same repeated pick-and-place task.</p>
+                <div class="bars" data-animate="bars">
+                  <div class="bar-row is-base"><span class="bar-name">Wan-OFT 5B</span><span class="bar-track"><span class="bar-fill" style="--w:20%"></span></span><span class="bar-val">20%</span></div>
+                  <div class="bar-row is-base"><span class="bar-name">Fast-WAM 5B</span><span class="bar-track"><span class="bar-fill" style="--w:50%"></span></span><span class="bar-val">50%</span></div>
+                  <div class="bar-row"><span class="bar-name">WM3D direct</span><span class="bar-track"><span class="bar-fill" style="--w:60%"></span></span><span class="bar-val">60%</span></div>
+                  <div class="bar-row is-ours"><span class="bar-name">WM3D imagine-rank</span><span class="bar-track"><span class="bar-fill" style="--w:70%"></span></span><span class="bar-val">70%</span></div>
+                </div>
+              </div>
+              <p class="note"><b>Scope of this claim.</b> Ten trials is a small sample: the count precludes a statistical significance claim, and we present this as preliminary evidence that imagined geometric outcomes can improve action selection rather than as a settled result. Expert-action replay was used to verify the control harness before policy evaluation, and both baselines were adapted with the same demonstrations and control protocol.</p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+  <section id="citation">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-tag">Citation</p>
+        <div>
+          <h2>Cite this work.</h2>
+          <p>WM3D: A Unified Native 3D World Model for Predicting Future States and Robot Actions.</p>
+        </div>
+      </div>
+      <div class="cite-block reveal">
+<pre>@article{liu2026wm3d,
+  title   = {WM3D: A Unified Native 3D World Model for
+             Predicting Future States and Robot Actions},
+  author  = {Liu, Mingquan and Qiu, Chenhao and Li, Jiayi and
+             Yao, Shanming and Lin, Sixu and Liu, Guiliang and
+             Wu, Simo},
+  year    = {2026}
+}</pre>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>WM3D is a unified action-conditioned world model for robot manipulation whose evolving state is native 3D geometry rather than visual appearance alone. Geometry is the predictive substrate and the decision interface; RGB is a read-out.</p>
+    <p class="fin">WM3D project page · 2026 · by <a href="/">Mingquan Liu</a></p>
+  </div>
+</footer>
+<script>
+(function(){
+  var els = document.querySelectorAll('.reveal, [data-animate="bars"]');
+  if (!('IntersectionObserver' in window)) {
+    for (var i = 0; i < els.length; i++) els[i].classList.add('revealed');
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) { e.target.classList.add('revealed'); io.unobserve(e.target); }
+    });
+  }, {rootMargin: '0px 0px -12% 0px', threshold: 0.12});
+  for (var j = 0; j < els.length; j++) io.observe(els[j]);
+})();
+</script>
+</body>
+</html>
