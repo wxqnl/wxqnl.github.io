@@ -201,6 +201,12 @@
   .mine-gallery .media-figure{grid-column:auto}
   .mine-note{max-width:82ch;margin:22px auto 0;text-align:center;color:oklch(82% 0.03 255);font-size:14px;line-height:1.55}
   .mine-note a{color:var(--cyan)}
+  .driving-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:32px}
+  .stat-item{border:1px solid oklch(100% 0 0 / .14);border-radius:18px;background:oklch(100% 0 0 / .055);padding:22px 20px;text-align:center}
+  .stat-value{display:block;font-family:var(--serif);font-size:clamp(36px,5vw,52px);line-height:1;color:white;letter-spacing:-.04em;margin-bottom:10px}
+  .stat-label{display:block;font-size:13px;line-height:1.4;color:oklch(82% 0.03 255);font-weight:600}
+  .driving-video{border:1px solid oklch(100% 0 0 / .15);border-radius:24px;overflow:hidden;background:oklch(100% 0 0 / .06);box-shadow:0 18px 55px oklch(7% 0.04 260 / .38);max-width:1140px;margin:0 auto}
+  .driving-video video{display:block;width:100%;height:auto;background:oklch(12% 0.045 260)}
   .render-grid{display:grid;grid-template-columns:1fr;gap:26px;max-width:940px;margin:0 auto}
   .render-figure{border:1px solid oklch(100% 0 0 / .15);border-radius:22px;overflow:hidden;background:oklch(100% 0 0 / .06);box-shadow:0 18px 55px oklch(7% 0.04 260 / .38)}
   .render-figure video{display:block;width:100%;height:auto;aspect-ratio:1280/704;object-fit:cover;background:oklch(12% 0.045 260)}
@@ -484,6 +490,27 @@
         <figure class="media-figure"><img loading="lazy" decoding="async" src="assets/demo_jaco.gif" width="512" height="512" alt="Jaco Play robot prediction compared with ground truth" /><figcaption><span class="name">Jaco Play</span><span class="meta">Kinova Jaco</span></figcaption></figure>
         <figure class="media-figure feature-demo"><img loading="lazy" decoding="async" src="assets/counterfactual_droid.gif" width="800" height="540" alt="Counterfactual action test where the same starting observation produces different imagined futures under different action chunks" /><figcaption><span class="name">Robot counterfactual</span><span class="meta">same start, different action chunks</span></figcaption></figure>
       </div>
+    </div>
+  </section>
+  <section id="driving" class="media-section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-tag">Autonomous driving</p>
+        <div>
+          <h2>Long-horizon closed-loop driving.</h2>
+          <p>WM3D completes dense urban routes with pedestrians, traffic, and dynamic signals. Town01 rainy scenario: 656 meters, 15 vehicles, 12 pedestrians. Left: WM3D. Right: TCP baseline (NeurIPS 2022).</p>
+        </div>
+      </div>
+      <div class="driving-stats reveal">
+        <div class="stat-item"><span class="stat-value">100%</span><span class="stat-label">Task success</span></div>
+        <div class="stat-item"><span class="stat-value">0.0</span><span class="stat-label">Collisions / km</span></div>
+        <div class="stat-item"><span class="stat-value">42%</span><span class="stat-label">Comfort pass rate</span></div>
+        <div class="stat-item"><span class="stat-value">−64%</span><span class="stat-label">Avoidable stall time</span></div>
+      </div>
+      <div class="driving-video reveal">
+        <video src="assets/driving_demo.mp4" width="1920" height="1080" controls playsinline preload="metadata" aria-label="Side-by-side comparison of WM3D and TCP baseline driving through Town01 rainy scenario with traffic and pedestrians"></video>
+      </div>
+      <p class="mine-note">Results from Town01 &amp; Town02 (two towns, two weather conditions). WM3D shows smoother actions and less unnecessary stopping; TCP has faster inference and better lane-keeping. Video played at 1.5× speed.</p>
     </div>
   </section>
   <section id="minecraft" class="media-section">
