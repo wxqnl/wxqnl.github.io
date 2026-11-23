@@ -37,7 +37,7 @@
     --sans:"IBM Plex Sans",-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
     --ease:cubic-bezier(.2,.8,.2,1);
-    --wrap:1120px;
+    --wrap:1440px;
   }
   *{box-sizing:border-box}
   html{background:var(--paper);scroll-behavior:smooth;scroll-padding-top:72px}
@@ -49,7 +49,7 @@
   h1,h2,h3{color:var(--ink);margin:0;font-weight:500;text-wrap:balance}
   p{margin:0 0 1em;text-wrap:pretty}
   img,video,canvas,svg{display:block;max-width:100%}
-  .wrap{width:min(var(--wrap),calc(100% - 32px));margin:0 auto}
+  .wrap{width:min(var(--wrap),calc(100% - 2 * clamp(16px,4vw,64px)));margin:0 auto}
   .measure{max-width:68ch}
   .mono{font-family:var(--mono)}
   .label{font:500 12.5px/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
@@ -77,7 +77,7 @@
   .kicker .tag{font:500 14px/1 var(--mono);color:var(--ours);letter-spacing:.04em;white-space:nowrap}
   @media (max-width:520px){.kicker .line{display:none}}
   .kicker .line{height:1px;width:56px;background:var(--rule)}
-  h1{font-family:var(--serif);font-size:clamp(40px,5.4vw,74px);line-height:1.02;letter-spacing:-.018em;font-weight:500;font-variation-settings:"opsz" 72}
+  h1{font-family:var(--serif);font-size:clamp(40px,5.2vw,84px);line-height:1.02;letter-spacing:-.018em;font-weight:500;font-variation-settings:"opsz" 72}
   h1 .w{display:inline-block;opacity:0;transform:translateY(.32em);animation:rise .9s var(--ease) forwards;animation-delay:calc(var(--i) * 70ms + 120ms)}
   h1 em{font-style:italic;font-weight:400;color:var(--ours)}
   @keyframes rise{to{opacity:1;transform:none}}
@@ -101,17 +101,25 @@
   .key i{display:inline-block;width:18px;height:2px;vertical-align:middle;margin-right:6px}
   @media (max-width:900px){.hero-grid{grid-template-columns:minmax(0,1fr)}.neuron{aspect-ratio:1.5/1;border-left:0;border-top:1px solid var(--rule);margin-top:8px}}
 
-  .lede{margin-top:44px;padding-top:26px;border-top:1px solid var(--rule);display:grid;grid-template-columns:180px minmax(0,1fr);gap:28px}
+  .lede{margin-top:44px;padding-top:26px;border-top:1px solid var(--rule);display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px}
   .lede p{font:400 clamp(21px,2.1vw,26px)/1.45 var(--serif);color:var(--ink);margin:0;max-width:44ch}
   @media (max-width:720px){.lede{grid-template-columns:minmax(0,1fr);gap:10px}}
 
   /* sections */
   section{padding:84px 0 0}
-  .sec-head{display:grid;grid-template-columns:180px minmax(0,1fr);gap:28px;margin-bottom:34px;align-items:baseline}
+  .sec-head{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px;margin-bottom:34px;align-items:baseline}
   .sec-head h2{font-family:var(--serif);font-size:clamp(30px,3.4vw,44px);line-height:1.1;letter-spacing:-.01em}
-  .body-grid{display:grid;grid-template-columns:180px minmax(0,1fr);gap:28px}
+  .body-grid{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px}
   .body-grid > :first-child{grid-column:2}
   @media (max-width:720px){.sec-head,.body-grid{grid-template-columns:minmax(0,1fr);gap:10px}.body-grid > :first-child{grid-column:1}}
+  .body-grid > .fig,.body-grid > .two{grid-column:1 / -1}
+  .split{display:grid;grid-template-columns:minmax(0,1.85fr) minmax(250px,1fr);gap:44px;align-items:center}
+  .split.top{align-items:start}
+  .split figcaption{margin-top:18px}
+  .side{display:grid;grid-template-columns:minmax(0,820px) minmax(0,1fr);column-gap:44px;align-items:end}
+  .side > h3{grid-column:1 / -1}
+  .side figcaption{margin-top:0}
+  @media (max-width:900px){.split,.side{grid-template-columns:minmax(0,1fr);gap:8px}.side figcaption{margin-top:14px}}
   h3{font-family:var(--serif);font-size:25px;line-height:1.25;margin:0 0 10px}
 
   /* reveal */
@@ -119,7 +127,7 @@
   .rv.in{opacity:1;transform:none}
 
   /* video */
-  .theater{margin-top:0}
+  .theater{margin:0 auto;max-width:max(960px,calc((100vh - 110px) * 16 / 9))}
   #video{padding-top:56px}
   .screen{position:relative;border:1px solid var(--rule);background:var(--paper);overflow:hidden}
   .screen video{width:100%;aspect-ratio:16/9;background:var(--paper)}
@@ -139,8 +147,9 @@
   @media (max-width:720px){.chapters{grid-template-columns:repeat(5,minmax(0,1fr))}.chap{padding:10px 6px}.chap .t{display:none}.chap .n{margin:0;text-align:center}}
 
   /* findings */
-  .findings{border-top:1px solid var(--ink)}
-  .finding{display:grid;grid-template-columns:180px minmax(0,1fr);gap:28px;padding:22px 0;border-bottom:1px solid var(--rule)}
+  .findings{border-top:1px solid var(--ink);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:56px}
+  @media (max-width:1000px){.findings{grid-template-columns:minmax(0,1fr)}}
+  .finding{display:grid;grid-template-columns:170px minmax(0,1fr);gap:24px;padding:24px 0;border-bottom:1px solid var(--rule)}
   .finding .big{font:500 clamp(30px,3.2vw,40px)/1 var(--serif);color:var(--ours);font-variant-numeric:lining-nums}
   .finding .big small{display:block;font:400 12.5px/1.4 var(--mono);color:var(--muted);margin-top:8px;letter-spacing:.02em}
   .finding p{margin:0;max-width:62ch}
@@ -182,6 +191,11 @@
   input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;margin-top:-6px;background:var(--paper);border:2px solid var(--ours);border-radius:50%}
   input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--paper);border:2px solid var(--ours);border-radius:50%}
   .readout{font:400 13.5px/1.6 var(--mono);color:var(--muted);margin-top:10px}
+  .controls.stack{flex-direction:column;align-items:stretch;gap:16px;margin-top:0}
+  .controls.stack .slider{justify-content:space-between}
+  .controls.stack input[type=range]{flex:1;width:auto}
+  .readout .row{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid var(--rule-soft);padding:5px 0}
+  .readout .row:last-child{border-bottom:0}
   .readout b{color:var(--ink);font-weight:500}
   .readout .o{color:var(--ours-ink)}
 
@@ -210,6 +224,8 @@
   /* results */
   .chart-wrap{position:relative}
   .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px}
+  .legend.vert{flex-direction:column;align-items:flex-start;gap:4px;margin-top:0;padding-top:6px;border-top:1px solid var(--rule)}
+  @media (max-width:900px){.legend.vert{flex-direction:row}}
   .legend button{display:inline-flex;align-items:center;gap:8px;border:0;background:none;padding:4px 0;font:500 13.5px/1 var(--sans);color:var(--ink-2);cursor:pointer;transition:opacity .2s}
   .legend button i{display:inline-block;width:20px;height:0;border-top:2.5px solid currentColor}
   .legend button.dash i{border-top-style:dashed}
@@ -240,7 +256,7 @@
   .pair{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:40px}
   @media (max-width:900px){.pair{grid-template-columns:minmax(0,1fr)}}
 
-  .walker{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:34px;align-items:start}
+  .walker{display:grid;grid-template-columns:minmax(0,540px) minmax(0,1fr);gap:52px;align-items:start}
   .tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 10px}
   .tile canvas{width:100%;aspect-ratio:1;border:1px solid var(--rule)}
   .tile.ours canvas{border:2px solid var(--ours)}
@@ -384,12 +400,16 @@
       <figure class="fig rv">
         <div class="panel">
           <div class="panel-head"><h3>How much of a cue is left after <span class="tex" data-tex="k"></span> steps?</h3><span class="label">interactive</span></div>
-          <div class="chart-wrap scrollx"><svg id="trace-svg" viewBox="0 0 760 330" role="img" aria-label="Trace strength against steps since the cue"></svg></div>
-          <div class="controls">
-            <label class="slider">retention τ <input type="range" id="tau" min="0" max="1000" value="768" /> <output id="tau-out">200</output></label>
-            <label class="slider">cue distance k <input type="range" id="kdist" min="1" max="200" value="101" /> <output id="k-out">101</output></label>
+          <div class="split">
+            <div class="chart-wrap scrollx"><svg id="trace-svg" viewBox="0 0 760 330" role="img" aria-label="Trace strength against steps since the cue"></svg></div>
+            <div>
+              <div class="controls stack">
+                <label class="slider">retention τ <input type="range" id="tau" min="0" max="1000" value="768" /> <output id="tau-out">200</output></label>
+                <label class="slider">cue distance k <input type="range" id="kdist" min="1" max="200" value="101" /> <output id="k-out">101</output></label>
+              </div>
+              <div class="readout" id="trace-readout"></div>
+            </div>
           </div>
-          <div class="readout" id="trace-readout"></div>
         </div>
         <figcaption><b>Figure 1.</b> The trace that a unit input leaves in a channel with retention <span class="tex" data-tex="\lambda=e^{-1/\tau}"></span>. With a leaky write gain <span class="nw"><span class="tex" data-tex="1-\lambda"></span>,</span> a channel that remembers long is written weakly, and no choice of <span class="tex" data-tex="\tau"></span> lifts the trace above <span class="nw"><span class="tex" data-tex="1/(e\,k)"></span>.</span> The normalized write gain of PD-SWM, <span class="nw"><span class="tex" data-tex="\sqrt{1-\lambda^2}"></span>,</span> keeps about <span class="tex" data-tex="1/\sqrt{e\,k}"></span> when <span class="nw"><span class="tex" data-tex="\tau\approx 2k"></span>.</span></figcaption>
       </figure>
@@ -446,8 +466,8 @@
     </div>
 
     <div class="body-grid">
-      <figure class="fig imgfig rv">
-        <img src="assets/eff_rank.webp" width="1500" height="750" alt="Dendritic state left by a unit input k steps earlier for PDN, PDN without NWG, PDN without resonance and multiple time constants." loading="lazy" style="max-width:760px" />
+      <figure class="fig imgfig side rv">
+        <img src="assets/eff_rank.webp" width="1500" height="750" alt="Dendritic state left by a unit input k steps earlier for PDN, PDN without NWG, PDN without resonance and multiple time constants." loading="lazy" />
         <figcaption><b>Figure 4.</b> Inputs at different times leave independent traces in the dendrites of the trained agent. Column <span class="tex" data-tex="k"></span> of each panel is the dendritic state left by a unit input <span class="tex" data-tex="k"></span> steps earlier, with the learned <span class="tex" data-tex="\tau"></span> and <span class="tex" data-tex="\theta"></span> of the agent for BSuite memory length 101. For inputs 1 to 101 steps back, the effective rank is 71.0 with PDM, 38.3 without NWG and 3.4 without resonance.</figcaption>
       </figure>
     </div>
@@ -462,9 +482,13 @@
     <div class="body-grid">
       <figure class="fig rv" id="ml-fig">
         <h3>How far back can each model recall a cue?</h3>
-        <div class="chart-wrap scrollx" id="ml-wrap"><svg id="ml-svg" viewBox="0 0 820 400" role="img" aria-label="Final return against BSuite memory length"></svg><div class="tip" id="ml-tip"></div></div>
-        <div class="legend" id="ml-legend"></div>
-        <figcaption><b>Figure 5.</b> Final return on BSuite memory length, where the agent is rewarded only if it recalls a cue seen <span class="tex" data-tex="L"></span> steps earlier. A return of 1 means always correct, and 0 is chance. Lines give the median of three seeds, and dots the single seeds; hover a dot or a name. Budgets are 150k to 500k environment steps for <span class="tex" data-tex="L"></span> = 8 to 64, and <span class="tex" data-tex="L"></span> = 51, 71 and 101 follow R2I with 1M steps.</figcaption>
+        <div class="split top">
+          <div class="chart-wrap scrollx" id="ml-wrap"><svg id="ml-svg" viewBox="0 0 820 400" role="img" aria-label="Final return against BSuite memory length"></svg><div class="tip" id="ml-tip"></div></div>
+          <div>
+            <div class="legend vert" id="ml-legend"></div>
+          <figcaption><b>Figure 5.</b> Final return on BSuite memory length, where the agent is rewarded only if it recalls a cue seen <span class="tex" data-tex="L"></span> steps earlier. A return of 1 means always correct, and 0 is chance. Lines give the median of three seeds, and dots the single seeds; hover a dot or a name. Budgets are 150k to 500k environment steps for <span class="tex" data-tex="L"></span> = 8 to 64, and <span class="tex" data-tex="L"></span> = 51, 71 and 101 follow R2I with 1M steps.</figcaption>
+          </div>
+        </div>
       </figure>
     </div>
 
@@ -497,9 +521,10 @@
               <button class="btn small" id="w-play" type="button" aria-label="Pause"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M4 2.5h3v11H4zM9 2.5h3v11H9z"/></svg></button>
               <label class="slider">frame <input type="range" id="w-frame" min="0" max="49" value="0" style="width:220px" /> <output id="w-out">1</output></label>
             </div>
+            <figcaption><b>Figure 6.</b> Open-loop prediction on DMC walker walk from pixels. The frames show one segment of an evaluation episode, and the curves give the pixel MSE averaged over 8 segments. PD-SWM has the lowest mean error of all models, including the ANN world models DreamerV3 and R2I.</figcaption>
           </div>
         </div>
-        <figcaption><b>Figure 6.</b> Open-loop prediction on DMC walker walk from pixels. The frames show one segment of an evaluation episode, and the curves give the pixel MSE averaged over 8 segments. PD-SWM has the lowest mean error of all models, including the ANN world models DreamerV3 and R2I.</figcaption>
+
       </figure>
     </div>
 
@@ -545,9 +570,9 @@
     </div>
 
     <div class="body-grid">
-      <figure class="fig imgfig rv">
+      <figure class="fig imgfig side rv">
         <h3>Where the cue is kept</h3>
-        <img src="assets/dendrites_viz.webp" width="1500" height="614" alt="Difference between two episodes that differ only in the cue, for spikes and dendrites, and per-channel differences of long-retention channels." loading="lazy" style="max-width:760px" />
+        <img src="assets/dendrites_viz.webp" width="1500" height="614" alt="Difference between two episodes that differ only in the cue, for spikes and dendrites, and per-channel differences of long-retention channels." loading="lazy" />
         <figcaption><b>Figure 8.</b> The world models of the BSuite memory length 101 agents read two episodes that differ only in the cue. (a) Difference in spikes and dendritic states between the two episodes, relative to their mean magnitude. The spikes of multicompartment neurons stop telling the episodes apart after about 10 steps, while the dendrites of PD-SWM keep the difference until step 101 and pass it on to the spikes of the soma. (b) Difference in each dendritic channel with a retention time above 100 steps: integrator channels hold the cue with a fixed sign, and the phase of resonant channels turns with the elapsed time.</figcaption>
       </figure>
     </div>
@@ -854,7 +879,11 @@ $$(".rv").forEach((n) => rio.observe(n));
     for (let i = 1; i < labs.length; i++) labs[i][1] = Math.max(labs[i][1], labs[i - 1][1] + 17);
     labs.forEach(([n, y]) => { n.setAttribute("x", X1 + 10); n.setAttribute("y", y + 4); });
     const vL = fL(kk), vN = fN(kk), vB = fB(kk);
-    out.innerHTML = `after <b>${kk}</b> steps with τ = <b>${Math.round(tau)}</b>: leaky write <b>${vL.toExponential(1)}</b> · limit <b>${vB.toExponential(1)}</b> · normalized write <b class="o">${vN.toExponential(1)}</b> (<span class="o">${(vN / vL).toFixed(1)}×</span> the leaky write)`;
+    out.innerHTML = `<div class="row"><span>trace after ${kk} steps</span></div>` +
+      `<div class="row"><span>leaky write</span><b>${vL.toExponential(1)}</b></div>` +
+      `<div class="row"><span>limit 1/(ek)</span><b>${vB.toExponential(1)}</b></div>` +
+      `<div class="row"><span class="o">normalized write</span><b class="o">${vN.toExponential(1)}</b></div>` +
+      `<div class="row"><span>gain over leaky write</span><b class="o">${(vN / vL).toFixed(1)}×</b></div>`;
   }
   function step() {
     shown.tau += (target.tau - shown.tau) * 0.22; shown.k += (target.k - shown.k) * 0.22;
