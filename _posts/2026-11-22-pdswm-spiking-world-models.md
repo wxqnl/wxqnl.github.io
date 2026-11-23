@@ -21,4 +21,4 @@ PD-SWM is an SNN world model built on Persistent Dendritic Neurons (PDNs). Their
 - In Memory Maze, it locates objects that have left the view more accurately than the spiking baselines and DreamerV3.
 - Predicting walker walk 45 frames ahead from actions alone, it has the lowest pixel error of all models.
 
-<a href="/pdswm/" class="btn btn--primary btn--large">View the visual project showcase →</a>
+<a href="/pdswm/" class="btn btn--primary btn--large">View the visual project showcase →</a> <a href="https://github.com/wxqnl/PD-SWM" class="btn btn--inverse btn--large">Code on GitHub</a>
