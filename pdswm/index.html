@@ -243,7 +243,7 @@
   thead tr.grp th{font:500 12px/1.2 var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--rule);padding-top:12px}
   thead tr.cols th{border-bottom:1px solid var(--ink)}
   tbody tr{border-bottom:1px solid var(--rule-soft)}
-  tbody tr.split{border-top:1px solid var(--rule)}
+  tbody tr.sep{border-top:1px solid var(--rule)}
   tr.budget td{font:400 12px/1.2 var(--mono);color:var(--muted);border-bottom:1px solid var(--rule)}
   tr.ours td{background:var(--ours-wash);color:var(--ink);font-weight:500}
   tr.ours td:first-child{color:var(--ours-ink);font-weight:600}
@@ -1103,8 +1103,8 @@ fetchJSON("assets/data/memlen.json").then((data) => {
   const sym = (s) => s.split("").map((c) => c === "y" ? ck : c === "n" ? xk : "–");
   const main = [
     ["DreamerV3 (ANN)", "yyynynn", ["0.38", "−0.43", "9.8", "85.3", "<b>953</b>", "<b>968</b>"]],
-    ["R2I (ANN)", "----yyn", ["−0.51", "−0.50", "<b>3.6</b>", "<b>85.8</b>", "916", "858"], "split-after"],
-    ["Spiking-WM", "nnnnnnn", ["0.44", "−0.50", "11.8", "83.5", "923", "917"], "split"],
+    ["R2I (ANN)", "----yyn", ["−0.51", "−0.50", "<b>3.6</b>", "<b>85.8</b>", "916", "858"]],
+    ["Spiking-WM", "nnnnnnn", ["0.44", "−0.50", "11.8", "83.5", "923", "917"], "sep"],
     ["Recurrent LIF", "ynnnnnn", ["<b>0.68</b>", "−0.51", "11.7", "83.7", "807", "943"]],
     ["GRSN", "yynnnnn", ["0.31", "−0.50", "11.5", "83.3", "863", "803"]],
     ["DH-SNN", "yyynnnn", ["−0.43", "−0.49", "11.9", "83.3", "917", "860"]],
@@ -1112,10 +1112,10 @@ fetchJSON("assets/data/memlen.json").then((data) => {
     ["PD-SWM (ours)", "yyyyyyy", ["<b>0.68</b>", "<b>0.45</b>", "9.0", "83.8", "923", "929"], "ours"]];
   const tb = $("#tbl-main-body");
   tb.innerHTML = `<tr class="budget"><td>Budget</td><td>150k</td><td>200k</td><td>300k</td><td>500k</td><td>1M</td><td>1M</td><td>1M</td><td>2M</td><td>2M</td><td colspan="2">1M updates</td><td>500k</td><td>1M frames</td></tr>` +
-    main.map(([n, b, rest, cls]) => `<tr class="${cls === "ours" ? "ours" : cls === "split" ? "split" : ""}"><td>${n}</td>${sym(b).map((s) => `<td>${s}</td>`).join("")}${rest.map((v) => `<td>${v}</td>`).join("")}</tr>`).join("");
+    main.map(([n, b, rest, cls]) => `<tr class="${cls === "ours" ? "ours" : cls === "sep" ? "sep" : ""}"><td>${n}</td>${sym(b).map((s) => `<td>${s}</td>`).join("")}${rest.map((v) => `<td>${v}</td>`).join("")}</tr>`).join("");
   const probe = [
     ["DreamerV3 (ANN)", ["<b>1.00</b>", "<b>1.00</b>", "<b>1.00</b>", "0.50", "0.95", "0.50", "0.50"]],
-    ["Spiking-WM", ["0.49", "0.54", "0.66", "0.52", "0.97", "0.50", "0.50"], "split"],
+    ["Spiking-WM", ["0.49", "0.54", "0.66", "0.52", "0.97", "0.50", "0.50"], "sep"],
     ["Recurrent LIF", ["<b>1.00</b>", "0.52", "0.50", "0.50", "<b>0.99</b>", "0.50", "0.50"]],
     ["GRSN", ["<b>1.00</b>", "<b>1.00</b>", "0.51", "0.51", "0.89", "0.51", "0.50"]],
     ["DH-SNN", ["<b>1.00</b>", "<b>1.00</b>", "<b>1.00</b>", "0.52", "0.63", "0.50", "0.50"]],
